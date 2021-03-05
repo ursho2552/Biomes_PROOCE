@@ -293,58 +293,12 @@ cd(folder_main)
 %% Run the Self-Organizing Map
 
 % =========================================================================
-% Here we prepare everything we need to run the Self-Organizing Map (SOM)
-% For this we need to calculate some approximations, based on the number of
-% observations (1°x1°-pixels per month) in the dataset, as these provide an
-% estimate of the number of neurons needed
-% =========================================================================
-
-%load dataset
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
-load('Simple_sort_Data.mat')
-
-% =========================================================================
-% For each month count the number of observations, i.e. the number of 
-% 1°x1°-pixels, and not the number of features, i.e. number of species 
-% modeled.
-% =========================================================================
-
-for i =1:12
-    [r, ~] = find(No_nan_phyto_simple(:,4) == i);
-    range_phyto(i) = length(r);
-%     mm_bio(i) = r(end)+1;
-end
-
-% =========================================================================
-% Define the total number of neurons based on the average value in 
-% range_phyto using the rule of thumb as presented in Vesanto and Alhoniemi
-% (2000). 
-% =========================================================================
-
-bounds = mean(5 * sqrt(range_phyto));
-
-% =========================================================================
-% Calculate the square root to get one side (i.e. assume the neurons are
-% positioned in a squared matrix. Be aware that there are other setups out
-% there.
-% =========================================================================
-
-approx = sqrt(bounds);
-approx = round(approx);
-
-% =========================================================================
-% I defined a range of number of neurons for testing the
-% stability/robustness/accuracy of our choice
-% =========================================================================
-
-min_approx = approx(1)-floor(approx(1)/4);
-max_approx = approx(1)+floor(approx(1)/4);
-num_neurons = [(5:3:min_approx-2),(min_approx+1:2:approx),(approx+2:2:max_approx),max_approx+14:20:70];
-num_neurons = [num_neurons; num_neurons]';
-
-% =========================================================================
-% Run the "SOM" file. This is not as transparent and might be confusing, as
-% SOM is not a function, but gets called in the main file. 
+% Run the "SOM" file. This file is a stand-alone file that can be called 
+% independetly from the main file, i.e. sort of a "secondary main file"
+% Running SOM as is will take a very long time. Thus, we instead use the
+% bash script "Euler_run_SOM.sh" to run every choice in parallel (Note that
+% some of the parameters in "Euler_run_SOM.sh" need to be changed prior to
+% runing the script
 % =========================================================================
 
 SOM
