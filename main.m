@@ -446,49 +446,61 @@ Validation
 
 cd(folder_main)
 
-%%
+%% Determine parameters for the definition of biomes
+
 % =========================================================================
-% ================== PCA for noise reduction ==============================
+% After determining the optimal number of clusters (9), we now cluster our
+% optimal setup SOM (trained with the entire dataset), and perform a
+% dimensionality reduction of the neurons, cluster them into 9 clusters,
+% and map them
 % =========================================================================
 
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error/Single_run_11.mat')
+%load data
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/')
+load('Single_run_11.mat')
+
 %load help variables
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'LatLon')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'latchl')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'lonchl')
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+load('HelpVariables.mat')
 
-%construct or load simplified version of raw data
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Transformed_CompleteSuitePhyto.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Simple_sort_Data.mat')
+if isfile('Area_map.mat')
+    load('Area_map.mat')
+else
+    %calculate an area map for area weighted calculations
+    area = ones(size(LatLon,1),3)*NaN;
+    area(:,1:2) = LatLon(:,2:3);
+    %LatLon (2 is Lon and 3 is Lat), for every combination get the area in km
+    earthellipsoid = referenceSphere('earth','km');
+    for i = 1:size(LatLon,1)
+        lat_tmp = LatLon(i,3);
+        lon_tmp = LatLon(i,2);
+        lat = [lat_tmp+0.5, lat_tmp-0.5];
+        lon = [lon_tmp+0.5, lon_tmp-0.5];
 
+        area(i,3) = areaquad(lat(1),lon(1),lat(2),lon(2),earthellipsoid);
+    end
+    area_map = prepare2plot([LatLon(:,4:5),LatLon(:,4)*0+1,area(:,3)]);
+    %save the map of pixel area for the future
+    save('Area_map','area_map')
+end
 
-%calculate area map
-% area = ones(size(LatLon,1),3)*NaN;
-% area(:,1:2) = LatLon(:,2:3);
-% %LatLon (2 is Lon and 3 is Lat), for every combination get the area in km
-% earthellipsoid = referenceSphere('earth','km');
-% for i = 1:size(LatLon,1)
-%     lat_tmp = LatLon(i,3);
-%     lon_tmp = LatLon(i,2);
-%     lat = [lat_tmp+0.5, lat_tmp-0.5];
-%     lon = [lon_tmp+0.5, lon_tmp-0.5];
-%     
-%     area(i,3) = areaquad(lat(1),lon(1),lat(2),lon(2),earthellipsoid);
-% end
-% area_map = prepare2plot(area,4,LatLon,0,0);
-% cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data')
-% save('Area_map','area_map')
-cd(folder_main)
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/Area_map.mat')
+% =========================================================================
+% Now we  test our definition of centroid, i.e. how are the
+% centroids best defined, (1) weighted by the occurrence frequency of each
+% memeber or (2) simply using the unique members. For this we use the
+% stand-alone script CompareCentroidMethod, which plots Figure A.10 in the
+% manuscript.
+% =========================================================================
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Monthly_biomes/PCA_no_mean_v2')
-%Run: Biomes_partialRun
-%% compare if frequency of neuron occurrence is taken into account or only the 961 neurons
-%This script plots Figure A.10
-Compare_centroid_method
+CompareCentroidMethod
 
-%% Perform clustering, find best suited fraction to define biomes
+%The once that consider the occurrence frequency perform better
 
+% =========================================================================
+% Now we test how small biomes can be without loosing a lot of information
+% =========================================================================
+
+%perform dimensionality reduction on trained neurons
 tic
 original_weights = net.IW{1};
 %original_weights = bsxfun(@minus,original_weights,mean(original_weights));
@@ -499,8 +511,10 @@ original_weights = net.IW{1};
 %variance than a single original variable
 [r,c] = find(latent > 1)
 
+%print variance explained
 round(explained(r(1:end))*100)/100
 
+%print cumulative variance explained
 sum(explained(r(1:end)))
 clearvars latent
 %[coeff,score,latent,tsquared,explained]
@@ -517,26 +531,22 @@ min(coeff,[],1)
 % REVIEW 23/11/2020 loadings END
 % =========================================================================
 
-
-% cd('Explained_threshold')
-cd('Latent_threshold')
-%calculate all, from 2 to 20 biomes
-n_clusters = [2:20]
-fracs = [0.1:0.1:2, 3:10]
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/PotentialBiomes/')
+%calculate from 2 to 20 biomes
+n_clusters = [2:20];
+%define how small biomes should be, 0.1% of the global ocean area up to 10%
+fracs = [0.1:0.1:2, 3:10];
 for j = 1:length(fracs)
     frac = fracs(j);
     for i = 1:length(n_clusters)
 
-        [raw_monthly_maps, new_weights,~,~] = Calculate_biomesV2(net, classes,...
-            No_nan_phyto_simple, n_clusters(i),coeff);%, area_map,latchl,lonchl);
+        [raw_monthly_maps, new_weights,~,~] = Calculate_biomes(net, classes,...
+            No_nan_phyto_simple, n_clusters(i),coeff);
         n = n_clusters(i);
 
 
-
-        [smooth_map] = Clean_up_biomesV3( raw_monthly_maps,new_weights,...
+        [smooth_map] = Clean_up_biomes( raw_monthly_maps,new_weights,...
         area_map,frac,4,0);
-
-
 
 
          save(horzcat('No_mean_PCA_biomes_',int2str(n_clusters(i)),'_v2_',int2str(frac*10),'_perc'),...
@@ -544,13 +554,11 @@ for j = 1:length(fracs)
     end
 end
 
+% =========================================================================
+% Check the number of pixels changed from raw
+% =========================================================================
 
-for m = 1:12
-    plotSOM(smooth_map,m,NaN)
-end
-
-%% look at number of pixels changed from raw
-[neuron_maps] = prepare2plotV2( [No_nan_phyto_simple(:,2:4),classes]);
+[neuron_maps] = prepare2plot( [No_nan_phyto_simple(:,2:4),classes]);
 orig_neurons = net.IW{1};
 fracs = [0.1:0.1:2, 3:10];
 frac_change = fracs.*NaN;
@@ -562,50 +570,40 @@ for ii = 1:length(fracs)
 
         %for each label in raw and smooth get the difference to the
         %original neurons, then subtract the raw from smooth
-            tmp_new_weights = [new_weights;new_weights(1,:).*0]; %add dummy weight
-            raw_tmp = raw_monthly_maps;
-            smooth_tmp = smooth_map;
-            raw_tmp(isnan(raw_monthly_maps)) = 0;
-            smooth_tmp(isnan(smooth_map)) = 0;
-            
-            diff_map = raw_tmp-smooth_tmp;
-            diff_map(diff_map ~= 0) = 1;
-            
-%             plotSOM(diff_map,1,NaN)
-            
-            %calculate difference to neurons at places where diff_map is 1
-            
-            orig_raw = orig_neurons(neuron_maps(diff_map == 1),:);
-            orig_smooth = orig_neurons(neuron_maps(diff_map == 1),:);
-            
-            tmp_new = orig_raw.*NaN;
-            tmp_new(:,:) = new_weights(raw_monthly_maps(diff_map == 1),:);
-            raw_dist =mean(sum(abs(orig_raw-tmp_new),2));
-            
-            tmp_new = orig_smooth.*NaN;
-            smooth_tmp = smooth_map;
-            smooth_tmp(isnan(smooth_map)) = size(tmp_new_weights,1);
-            tmp_new(:,:) = tmp_new_weights(smooth_tmp(diff_map == 1),:);
-            smooth_dist =mean(sum(abs(orig_smooth-tmp_new),2));
-        
-            tmp = [tmp;(smooth_dist-raw_dist)/smooth_dist];
+        tmp_new_weights = [new_weights;new_weights(1,:).*0]; %add dummy weight
+        raw_tmp = raw_monthly_maps;
+        smooth_tmp = smooth_map;
+        raw_tmp(isnan(raw_monthly_maps)) = 0;
+        smooth_tmp(isnan(smooth_map)) = 0;
+
+        diff_map = raw_tmp-smooth_tmp;
+        diff_map(diff_map ~= 0) = 1;
+
+        %calculate difference to neurons at places where diff_map is 1
+
+        orig_raw = orig_neurons(neuron_maps(diff_map == 1),:);
+        orig_smooth = orig_neurons(neuron_maps(diff_map == 1),:);
+
+        tmp_new = orig_raw.*NaN;
+        tmp_new(:,:) = new_weights(raw_monthly_maps(diff_map == 1),:);
+        raw_dist =mean(sum(abs(orig_raw-tmp_new),2));
+
+        tmp_new = orig_smooth.*NaN;
+        smooth_tmp = smooth_map;
+        smooth_tmp(isnan(smooth_map)) = size(tmp_new_weights,1);
+        tmp_new(:,:) = tmp_new_weights(smooth_tmp(diff_map == 1),:);
+        smooth_dist =mean(sum(abs(orig_smooth-tmp_new),2));
+
+        tmp = [tmp;(smooth_dist-raw_dist)/smooth_dist];
         
     end
-    frac_change(ii)  = mean(tmp(2:end))
+    frac_change(ii)  = mean(tmp(2:end));
 end
 
 figure
 hold on
 plot(fracs,frac_change)
 grid on
-
-
-
-
-
-
-
-
 
 
 figure
@@ -619,53 +617,31 @@ grid on
 %changing point!!! --> lower likely better, since less added error
 
 
-%%
+%% Producing biomes
+
+% =========================================================================
+% We now produce biomes based on the choices tested above, i.e. 9 clusters
+% are optimal, 0.5% of the global ocean area is the minimum area for a
+% biome, and cluster centroids are weighted by the occurrence frequency of
+% each cluster member.
+% =========================================================================
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/PotentialBiomes/')
+
+load('No_mean_PCA_biomes_9_v2_5_perc.mat')
+[smooth_annual_map, annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,0,4);
+[uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,1,4);
+
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+save('No_mean_PCA_biomes_annual_9_v2_5_perc','smooth_annual_map','annual_map',...
+    'uncertainty_smooth_annual_map','uncertainty_annual_map')
+
+%plot the annual biome to see the structure
+plotSOM(smooth_annual_map,1,9)
 
 
 
 
-
-
-
-for i = 8
-    load(horzcat('No_mean_PCA_biomes_',int2str(n_clusters(i)),'_v2_5_perc.mat'))
-    [smooth_annual_map, annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,0,4);
-    [uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,1,4);
-    save(horzcat('No_mean_PCA_biomes_annual_',int2str(n_clusters(i)),'_v2_5_perc'),'smooth_annual_map','annual_map',...
-        'uncertainty_smooth_annual_map','uncertainty_annual_map')
-end
-
-% plotSOM(annual_map,1,NaN)
- plotSOM(smooth_annual_map,1,9)
-% 
-% plotSOM(uncertainty_annual_map,1,NaN)This
-% 
-% plotSOM(uncertainty_smooth_annual_map,1,NaN)
-
-
-%calculate fraction of area that is uncertain
-uncertainty_fraction = n_clusters.*NaN;
-for i = 1:length(n_clusters)
-    load(horzcat('No_mean_PCA_biomes_annual_',int2str(n_clusters(i)),'_v2_5_perc.mat'))
-    tot_area = sum(area_map(~isnan(smooth_annual_map)));
-    uncertain_area = sum(area_map(~isnan(smooth_annual_map) & isnan(uncertainty_smooth_annual_map)));
-%    
-%      plotSOM(smooth_annual_map,1,NaN)
-%      plotSOM(uncertainty_smooth_annual_map,1,NaN)
-     uncertainty_fraction(i) = uncertain_area/tot_area
-%     jj = input('fdf')
-    
-end
-
-figure
-hold on
-grid on
-plot(n_clusters,uncertainty_fraction)
-
-
-
-
-%% Perform the same but for leaky biomes and lost species
+%% Testing the robustness of our biomes
 load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'LatLon')
 load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'latchl')
 load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'lonchl')

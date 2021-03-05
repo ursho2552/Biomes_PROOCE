@@ -89,9 +89,9 @@ for j = 1:length(fraqs)
         tmp_simple = No_nan_phyto_simple(:,2:4);
         tmp_simple(ind,:) = [];
 
-        [neuron_maps] = prepare2plotV2( [tmp_simple,classes_noise(:,1)]);
+        [neuron_maps] = prepare2plot( [tmp_simple,classes_noise(:,1)]);
 
-        [ validation_classes ] = Apply_SOM2( No_nan_phyto_simple(ind,:), noise_net );
+        [ validation_classes ] = Apply_SOM( No_nan_phyto_simple(ind,:), noise_net );
 %             Analog_data = No_nan_phyto_simple(ind,:);
 %             validation_classes = Analog_data(:,1).*NaN;
 % 
@@ -121,7 +121,7 @@ for j = 1:length(fraqs)
                    [tmp_simple(:,1:2),classes_noise] ); 
 
             % get map of clusters
-            training_map_monthly = prepare2plotV2([tmp_simple,new_training_classes(:,end)]);
+            training_map_monthly = prepare2plot([tmp_simple,new_training_classes(:,end)]);
 
             %calculate weights
 

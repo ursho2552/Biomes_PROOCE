@@ -5,7 +5,7 @@ function [ bmu2 ] = find_2_bmu( data, class, weights, classes, dist_metric)
 %{
 Parameters:
     data (matrix): Features of one observation
-    class (vector): Class label of the observation
+    class (int): Class label of the observation
     weights (matrix) : Weights of the trained neurons
     classes (vector): Vector containing the class labels for each observations
     dist_metric (str): Metric used to calculate distance between neurons
