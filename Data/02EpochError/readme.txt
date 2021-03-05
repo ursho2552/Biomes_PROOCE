@@ -1,0 +1,1 @@
+Files containing the trained SOMs using different number of epochs and constant number of neurons

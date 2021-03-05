@@ -26,37 +26,11 @@ load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensembl
 load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/Area_map.mat')
 
 
-% =========================================================================
-% Calculate seasonally corrected observations; UHE 14.08.2019
-% =========================================================================
-
-[ID_maps] = prepare2plotV2( [No_nan_phyto_simple(:,2:4),No_nan_phyto_simple(:,1)]);
-corrected_monthly_raw = ones(12,180, 360)*NaN;
-corrected_monthly_ID = corrected_monthly_raw;
-for i =1:12
-    if(i<7)
-        j = mod(i+6,13);
-    else
-        j = mod(i+6,13) +1;
-    end
-    %i and j are the indices of the months that need to be combined
-    corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);%raw_monthly_maps(i,91:end,:);%smooth_map(i,91:end,:);
-    corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); % raw_monthly_maps(j,1:90,:); %smooth_map(j,1:90,:); % 
-    
-    corrected_monthly_ID(i,91:end,:) = ID_maps(i,91:end,:);
-    corrected_monthly_ID(i,1:90,:) = ID_maps(j,1:90,:);
-
-end
-
-
-
-
 
 %%
 % =========================================================================
 % Change label numbering using descending mean area; UHE 09/08/2019
 % =========================================================================
-
 
 
 n_clusters = 9
@@ -82,8 +56,13 @@ for i = 1:n_clusters
     corr_corrected_monthly_smooth(corrected_monthly_smooth == I(i)) = i;
     corr_corrected_monthly_raw(corrected_monthly_raw == I(i)) = i;
 end
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Biomes')
-% save('Seasonally_corrected_original','corr_smooth_annual_map','corr_season_smooth','corr_corrected_monthly_smooth')
+
+%safe biomes with corrected labels
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+
+save('Seasonally_corrected_original','corr_smooth_annual_map','corr_season_smooth','corr_corrected_monthly_smooth')
+
+
 cd(folder_main)
 % get min and max monthly area
 %% Data for Table 3
@@ -101,16 +80,16 @@ round(1000*B)/10
 % =========================================================================
 plotSOM(corr_smooth_annual_map,1,8)
 hold on;
-cmap = morgenstemning(12)%parula(9);
+cmap = morgenstemning(12)
 [cmap_tmp] = shuffle_colormap(cmap);
 [cmap_tmp1] = shuffle_colormap(cmap_tmp);
 
 
-cmap = ametrine(12)%parula(9);
+cmap = ametrine(12)
 [cmap_tmp] = shuffle_colormap(cmap);
 [cmap_tmp2] = shuffle_colormap(cmap_tmp);
 
-cmap = isolum(12)%parula(9);
+cmap = isolum(12)
 [cmap_tmp] = shuffle_colormap(cmap);
 [cmap_tmp3] = shuffle_colormap(cmap_tmp);
 
@@ -139,16 +118,7 @@ end
 for s = 1:4
     plotSOM(corr_season_smooth,s,8)
     hold on;
-%     cmap = parula(9);
-%     [cmap_tmp] = shuffle_colormap(cmap);
-%     [cmap_tmp] = shuffle_colormap(cmap_tmp);
     colormap(comb_cmap)
-%     c = colorbar
-%     set( c, 'YDir', 'reverse' );
-%     [positions] = get_ticks_centered(8);
-%     c.YTick = positions;
-%     c.TickLabels = {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
-%         '(7) PEU','(8) SMN'}
     set(findall(gcf,'-property','FontSize'),'FontSize',30)
     set(findall(gcf,'-property','LineWidth'),'LineWidth',3)
     hold off
@@ -198,10 +168,7 @@ for i = 1:4
     [cmap_tmp] = shuffle_colormap(cmap_tmp);
 
     colormap(comb_cmap)
-    % c = colorbar
-    % set( c, 'YDir', 'reverse' );
-    % [positions] = get_ticks_centered(8);
-    % c.YTick = positions;
+ 
     set(findall(gcf,'-property','FontSize'),'FontSize',30)
     set(findall(gcf,'-property','LineWidth'),'LineWidth',3)
 end
@@ -241,19 +208,6 @@ xticklabels({'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
 grid on
 
 
-
-
-
-%  [ Pacific,Indian,Atlantic, Southern ] = Get_basins( corr_season_smooth(s,:,:),0 );
-% [r c] = find(squeeze(Pacific(s,:,:)) == label);
-% latchl(min(unique(r)))-0.5
-% latchl(max(unique(r)))+0.5
-% [r c] = find(squeeze(Indian(s,:,:)) == label);
-% latchl(min(unique(r)))-0.5
-% latchl(max(unique(r)))+0.5
-% [r c] = find(squeeze(Atlantic(s,:,:)) == label);
-% latchl(min(unique(r)))-0.5
-% latchl(max(unique(r)))+0.5
 %%
 area_biomes
 %% Figure 4a
@@ -273,23 +227,6 @@ hold on;
 yticklabels(yvalues(orig));
 xlabel('Manhattan distance')
 set(h,'LineWidth',3)
-%find most similar to 4 and reassign
-
-% sequence_labels = [ 4 1 2 3 5 6 7 8 9];
-% D = pdist2(new_weights(4,:),new_weights,'cityblock');
-% maxclust = size(new_weights,1);
-% D(1,4) = NaN;
-% D = [(1:length(D))',D'];
-% D(~ismember(D(:,1),sequence_labels),2) = NaN;
-% new_weights(~ismember(D(:,1),sequence_labels),:) = NaN;
-% 
-% Z = linkage(new_weights,'weighted','cityblock');
-% Z(isnan(Z(:,3)),:) = [];
-% Z(:,3) = [(maxclust+1):(maxclust+size(Z,1))]';
-% 
-% [sequence] = find_most_similar(D, Z,4,9, 4)
-
-%--> reassign 4 to 5
 
 
 %% Figure 4b 
@@ -471,24 +408,6 @@ end
 turnover_mean
 
 
-
-
-
-% for s = 1:4
-%     figure
-%     hold on
-%     for n = 1:n_clusters
-%     plot(squeeze(turnover_mean(s,n,:)),[n n n],'k-')
-%     plot(squeeze(turnover_mean(s,n,2)),[n n n],'k*')
-%     end
-%     yticklabels({'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
-%     '(7) PEU','(8) SMN'}) 
-%     ylim([0 9])
-%     grid on
-%     jj = input('next')
-% end
-% 
-% squeeze(turnover_mean(1,:,:))
 %% get fraction of species shared between biomes
 species_biomes = ones(12,8,536).*NaN;
 for m = 1:12
@@ -747,9 +666,6 @@ for n = 1:8
 ranks(:,n) = r'
 end
 
-
-
-
 ranks = ones(536,n_clusters).*NaN;
 for n = 1:n_clusters
     [B,tmp] = sort(coverage(n,:),'descend');
@@ -778,8 +694,6 @@ sorted_cov_name = name_genus_phylum(tmp,[3 1]);
 sorted_species_list = name_genus_phylum(I,:);
 
 sorted_species_coverage = coverage(:,I)';
-
-
 
 [r c] = find(coverage(2,:) == max(coverage(2,:)))
 name_genus_phylum(c,:)
@@ -843,7 +757,6 @@ tmp_satellite_species(tmp_satellite_species > 0) = 1;
 
 %% Additional analysis on carbon and  biovolume
 
-
 % Add carbon and biovolume to name_genus_phylum
 % read data from Sal et al (2013) Table 2 manually!!!
 save('Sal_et_al_biovolume','Biovolume_names','Biovolume_values')
@@ -887,7 +800,6 @@ for i = 1:length(hapto_gen)
     [r c] = find(hapto(:,2) == hapto_gen{i})
     hapto_gen_num(i,1) = length(r)
 end
-
 
 %get carbon and biovolume for each biome
 carbon_biovolume_all = ones(12,8,2).*NaN;
@@ -1083,7 +995,7 @@ tic
 d1 = 31;
 d2 = d1;
 optimal_epoch = 200;
-[ind_classes, ind_net] = My_SOM2( ind_phyto, d1,d2, optimal_epoch,'mandist' );
+[ind_classes, ind_net] = My_SOM( ind_phyto, d1,d2, optimal_epoch,'mandist' );
 toc
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/11Indicator_species')
 save('Indicator_SOM_48','ind_phyto','ind_classes','ind_net' ,'ind_species')

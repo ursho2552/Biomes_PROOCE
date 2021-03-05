@@ -1,0 +1,1 @@
+Files containing trained SOMs using data with missing spatio-temporal information

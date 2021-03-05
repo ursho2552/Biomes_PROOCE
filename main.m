@@ -159,7 +159,11 @@ Transformed_phyto(No_nan_phyto > 0.5) = 1;
 %need to overwrite these four fields
 Transformed_phyto(:,1:4) = No_nan_phyto(:,1:4);
 %save the data
-save('Transformed_CompleteSuitePhyto','Transformed_phyto','labels_phyto')
+if isfile('Transformed_CompleteSuitePhyto.mat')
+    disp('File already exists!')
+else
+    save('Transformed_CompleteSuitePhyto','Transformed_phyto','labels_phyto')
+end
 
 cd(folder_main)
 
@@ -200,8 +204,11 @@ end
 % =========================================================================
 
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
-save('HelpVariables','LatLon','lons','lats','labels_phyto')
-
+if isfile('HelpVariables.mat')
+    disp('File already exists!')
+else
+    save('HelpVariables','LatLon','lons','lats','labels_phyto')
+end
 
 % =========================================================================
 % Use LatLon to substitute lat lon for X- and Y-indeces in the merged,
@@ -220,8 +227,11 @@ for i = 1:length(LatLon)
 end
 %save the dataset
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities')
-save('Simple_sort_Data','No_nan_phyto_simple')
-
+if isfile('Simple_sort_Data.mat')
+    disp('File already exists!')
+else
+    save('Simple_sort_Data','No_nan_phyto_simple')
+end
 cd(folder_main)
 
 
@@ -632,6 +642,7 @@ load('No_mean_PCA_biomes_9_v2_5_perc.mat')
 [uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,1,4);
 
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+
 save('No_mean_PCA_biomes_annual_9_v2_5_perc','smooth_annual_map','annual_map',...
     'uncertainty_smooth_annual_map','uncertainty_annual_map')
 
@@ -670,8 +681,11 @@ for fr = 1:30
     noisy_data_ind(r_ind,fr) = fr;
 end
 %save noisy data indeces
-save('Noisy_data_ind','noisy_data_ind')
-
+if isfile('Noisy_data_ind.mat')
+    disp('File already exists!')
+else
+    save('Noisy_data_ind','noisy_data_ind')
+end
 % =========================================================================
 % Now we again run a bash script "Euler_run_Robustness.sh to train 10
 % different SOMs. This again has to be done manually!!!!
@@ -849,7 +863,11 @@ tic
 toc
 
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
-save('Seasonally_corrected_data','Season_No_nan_phyto_simple')
+if isfile('Seasonally_corrected_data.mat')
+    disp('File already exists!')
+else
+    save('Seasonally_corrected_data','Season_No_nan_phyto_simple')
+end
 
 % =========================================================================
 % Using the seasonally corrected monthly maps, and seasonally corrected
@@ -878,9 +896,12 @@ end
  
 
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
-save('No_mean_PCA_biomes_seasonal_9_v2_5_perc','season_map_smooth','season_map',...
+if isfile('No_mean_PCA_biomes_seasonal_9_v2_5_perc.mat')
+    disp('File already exists!')
+else
+    save('No_mean_PCA_biomes_seasonal_9_v2_5_perc','season_map_smooth','season_map',...
         'uncertainty_smooth_seasonal_map','uncertainty_season_map','Season_obs','corrected_monthly_smooth')
-
+end
 
 
 %% Analysis
