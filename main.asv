@@ -293,46 +293,22 @@ cd(folder_main)
 %% Run the Self-Organizing Map
 
 % =========================================================================
-% Here we prepare everything we need to run the Self-Organizing Map (SOM)
-% For this we need to calculate some approximations, based on the number of
-% observations (1°x1°-pixels per month) in the dataset, as these provide an
-% estimate of the number of neurons needed
+% Run the "SOM" file. This file is a stand-alone file that can be called 
+% independetly from the main file, i.e. sort of a "secondary main file"
+% Running SOM as is will take a very long time. Thus, we instead use the
+% bash script "Euler_run_SOM.sh" to run every choice in parallel (Note that
+% some of the parameters in "Euler_run_SOM.sh" need to be changed prior to
+% runing the script
 % =========================================================================
 
-%load dataset
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
-load('Simple_sort_Data.mat')
-
-% =========================================================================
-% For each month count the number of observations, i.e. the number of 
-% 1°x1°-pixels, and not the number of features, i.e. number of species 
-%modeled.
-% =========================================================================
-
-for i =1:12
-    [r c] = find(No_nan_phyto_simple(:,4) == i);
-    m_bio(i) = length(r);
-    mm_bio(i) = r(end)+1;
-end
-
-range_phyto = m_bio;
-%define bounds based on the average value in range_phyto
-%use rule of thumb as presented in Vesanto and Alhoniemi (2000). 
-bounds = mean(5 * sqrt(range_phyto));
-
-%define number of neurons to train SOM. Square root to get one side
-approx = sqrt(bounds);
-approx = round(approx);
-%define a range in number of neurons to test for the most accurate model
-min_approx = approx(1)-floor(approx(1)/4);
-max_approx = approx(1)+floor(approx(1)/4);
-num_neurons = [(5:3:min_approx-2),(min_approx+1:2:approx),(approx+2:2:max_approx),max_approx+14:20:70];
-num_neurons = [num_neurons; num_neurons]';
-
-%the script SOM uses the input num_neurons
 SOM
 
 %% Figure A.9a)
+
+
+% =========================================================================
+% Plot the total error as a function of increasing number of neurons
+% =========================================================================
 
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error')
 str1 = 'Single_run_';
@@ -342,7 +318,7 @@ error_neurons = ones(1,nn)*NaN;
 for i = 1:nn
     
         load(horzcat(str1,int2str(i),str2),'total_error')
-        error_neurons(i) = total_error
+        error_neurons(i) = total_error;
    
 end
     
@@ -364,7 +340,7 @@ for i = 2:length(y)-1
 end
 
 % 5% of the first decrease by increasing the number of neurons
-first = dydx(2)*0.05
+first = dydx(2)*0.05;
 
 
 figure()
@@ -388,9 +364,14 @@ hold off;
 
 %% Figure A.9b)
 
+
+% =========================================================================
+% Plot the total error as a function of increasing number of epochs
+% =========================================================================
+
 str1 = 'Single_run_epoch';
 str2 = '_error.mat';
-nn = 11
+nn = 11;
 error_neurons_ep = ones(1,nn)*NaN;
 for i = 1:nn
     if(i <= 8)
@@ -400,7 +381,7 @@ for i = 1:nn
         load(horzcat(str1,'_',int2str(i),'.mat'),'total_error_ep')
         
     end
-    error_neurons_ep(i) = total_error_ep
+    error_neurons_ep(i) = total_error_ep;
    
 end
 epoch = [1, 5, 10, 20, 50, 100, 200, 300, 400, 500, 700, 1000];
@@ -419,10 +400,41 @@ vline.Color = 'r';
 hold off;
 
 
-%%
+%% Cross-Validation test
+
 % =========================================================================
-% ================== Validation Test ======================================
+% We performed an extended Cross-Validation (CV) test of increasing
+% leave-out data fraction. We trained SOMS with 90%, 80%, 66%, and 50% of
+% the data, while using the remaining 10%, 20%, 33% and 50% for validation.
+% This was done such that each data partition was used once for validation
+% and 9, 4, 2, 1 for training. 
 % =========================================================================
+
+% =========================================================================
+% The first step is to create the CV folds. For this we use the stnad-alone
+% script "Create_CV_folds
+% =========================================================================
+
+CreateCVfolds
+
+% =========================================================================
+% After determining the folds, we train SOMs using 90%, 80%, 66%, and 50% 
+% of the data. For this we use the bash script "Euler_run_CV.sh" which 
+% calls the function CV_SOM with specified parameters to run everything in
+% parallel on a cluster
+% =========================================================================
+% =========================================================================
+% =========================================================================
+% ===== CALLING THE SCRIPT "Euler_run_CV.sh"IS DONE MANUALLY !!!! =========
+% =========================================================================
+% =========================================================================
+% =========================================================================
+
+
+%
+
+
+
 
 % Run the validation script, i.e. train ten SOMs with randomly chosen 90%
 % of the data and compare trained neurons to the remaing 10%. Then

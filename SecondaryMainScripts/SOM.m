@@ -72,7 +72,7 @@ for i = 1:size(num_neurons,1)
         [classes, net] = My_SOM( Transformed_phyto, d1,d2, 200,'mandist' );
         
         computing_time(i) = toc
-        cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error')
+        cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError')
         save(horzcat('Single_run',num2str(i)),'classes','net','i')
         
         %calculate error
@@ -142,6 +142,7 @@ for i = 1:size(epoch,2)
         [classes_ep, net_ep] = My_SOM( Transformed_phyto, d1,d2, epoch(i),'mandist' );   
         computing_time_ep(i) = toc
         %save each SOM run
+        cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/02EpochError')
         save(horzcat('Single_run_ep',num2str(i)),'classes_ep','net_ep','i')
         tic
         [ qe, te, total_error_ep ] = get_total_error( Transformed_phyto,classes_ep, net_ep,'mandist' ); 
@@ -175,15 +176,15 @@ optimal_epoch = 200;
 %==========================================================================
 
 
-tic
-d1 = optimal_dim(1);
-d2 = optimal_dim(2);
-[optimal_classes, optimal_net] = My_SOM( Transformed_phyto, d1,d2, optimal_epoch,'mandist' );
-toc
-%copy classes from SOM into the lat-lon combination
-[ qe, te, total_error ] = get_total_error( Transformed_phyto,optimal_classes, optimal_net,'mandist' )
-classes_month = [Transformed_phyto(:,2:3),optimal_classes]; %lon|lat|class
-new_data_ann = prepare2plot(classes_month,mm_bio,LatLon,1,0);
+% tic
+% d1 = optimal_dim(1);
+% d2 = optimal_dim(2);
+% [optimal_classes, optimal_net] = My_SOM( Transformed_phyto, d1,d2, optimal_epoch,'mandist' );
+% toc
+% %copy classes from SOM into the lat-lon combination
+% [ qe, te, total_error ] = get_total_error( Transformed_phyto,optimal_classes, optimal_net,'mandist' )
+% classes_month = [Transformed_phyto(:,2:3),optimal_classes]; %lon|lat|class
+% new_data_ann = prepare2plot(classes_month,mm_bio,LatLon,1,0);
 
 
 

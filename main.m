@@ -305,6 +305,11 @@ SOM
 
 %% Figure A.9a)
 
+
+% =========================================================================
+% Plot the total error as a function of increasing number of neurons
+% =========================================================================
+
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error')
 str1 = 'Single_run_';
 str2 = '_error.mat';
@@ -313,7 +318,7 @@ error_neurons = ones(1,nn)*NaN;
 for i = 1:nn
     
         load(horzcat(str1,int2str(i),str2),'total_error')
-        error_neurons(i) = total_error
+        error_neurons(i) = total_error;
    
 end
     
@@ -335,7 +340,7 @@ for i = 2:length(y)-1
 end
 
 % 5% of the first decrease by increasing the number of neurons
-first = dydx(2)*0.05
+first = dydx(2)*0.05;
 
 
 figure()
@@ -359,9 +364,14 @@ hold off;
 
 %% Figure A.9b)
 
+
+% =========================================================================
+% Plot the total error as a function of increasing number of epochs
+% =========================================================================
+
 str1 = 'Single_run_epoch';
 str2 = '_error.mat';
-nn = 11
+nn = 11;
 error_neurons_ep = ones(1,nn)*NaN;
 for i = 1:nn
     if(i <= 8)
@@ -371,7 +381,7 @@ for i = 1:nn
         load(horzcat(str1,'_',int2str(i),'.mat'),'total_error_ep')
         
     end
-    error_neurons_ep(i) = total_error_ep
+    error_neurons_ep(i) = total_error_ep;
    
 end
 epoch = [1, 5, 10, 20, 50, 100, 200, 300, 400, 500, 700, 1000];
@@ -390,97 +400,51 @@ vline.Color = 'r';
 hold off;
 
 
-%%
+%% Cross-Validation test
+
 % =========================================================================
-% ================== Validation Test ======================================
+% We performed an extended Cross-Validation (CV) test of increasing
+% leave-out data fraction. We trained SOMS with 90%, 80%, 66%, and 50% of
+% the data, while using the remaining 10%, 20%, 33% and 50% for validation.
+% This was done such that each data partition was used once for validation
+% and 9, 4, 2, 1 for training. 
 % =========================================================================
 
-% Run the validation script, i.e. train ten SOMs with randomly chosen 90%
-% of the data and compare trained neurons to the remaing 10%. Then
-% cluster the trained neurons and calculate the error of the clusters to
-% the associated observation
+% =========================================================================
+% The first step is to create the CV folds. For this we use the stnad-alone
+% script "Create_CV_folds
+% =========================================================================
 
-% For each SOM, use the Graph (error vs number of clusters) to calculate
-% the optimal number of clusters using the elbow approach. This provides a
-% list of possible number of clusters.
+CreateCVfolds
 
-% Perform the elbow analysis for the mean of all ten SOMs and use the 
-% approach depicted in the supplement of Fendereski et al., 2013 to get
-% another estimate of the optimal number of clusters
+% =========================================================================
+% After determining the folds, we train SOMs using 90%, 80%, 66%, and 50% 
+% of the data. For this we use the bash script "Euler_run_CV.sh" which 
+% calls the function CV_SOM with specified parameters to run everything in
+% parallel on a cluster
+% =========================================================================
+% =========================================================================
+% =========================================================================
+% ===== CALLING THE SCRIPT "Euler_run_CV.sh"IS DONE MANUALLY !!!! =========
+% =========================================================================
+% =========================================================================
+% =========================================================================
 
-%Perform the same analysis for the SOM trained with the full data to get
-%more estimates
 
-%The optimal number of clustes is chosen such that the resulting biomes are
-%robust to information loss
+% =========================================================================
+% After training the SOMs, we validate against the leave-out data using the
+% following stand-alone script. The script "Validation" performs the
+% dimensionality reduction, clustering, and validation. In the end it plots
+% the error of the clustering as a function of increasing number of
+% clusters. This has to be adapted to each application as the threshold
+% lines in the plots are hardcoded. This script was used to plot Figure 1
+% in the manuscript
+% =========================================================================
+
+Validation
 
 
 cd(folder_main)
-%run the following two scripts in parallel cores (manually change them)
-Validation_partialRun
-% Validation_partialRun2
-Validation_partialRun_PCA2
-%validation_scriptV2
-
-%% Oliver and Fendereski approach 
-% optimal number of classes is the point where adding one more class
-% decreases the error by less than 1% for three consecutive clusterings and
-% lowest number of clusters with less than 5% of first decrease
-
-%% Figure 1
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/03ValidationSOMs')
-load('V2_Biome_PCA_Validation.mat')
-
-mean_difference = mean(difference,1,'omitnan');
-title_ = 'Mean'
-
-dydx = mean_difference.*NaN;
-h = 2:length(mean_difference)+1;
-%check the reduction of error by adding one cluster, thus write on
-%i+1!!! OLD version with forward difference
-for i = 1:length(mean_difference)-1
-% for i = 2:length(mean_difference)-1
-%     dydx(i) = (mean_difference(i+1) - mean_difference(i-1))/(2*max(mean_difference));
-    dydx(i+1) = (mean_difference(i+1) - mean_difference(i))/max(mean_difference);
-end
-
-
-figure()
-hold on;
-
-xlabel('Number of clusters')
-
-yyaxis left
-ylabel('Mean validation error') 
-plot(h,mean_difference);
-
-yyaxis right
-ylabel('Relative change of validation error') 
-plot(h,abs(dydx),'+-');
-
-set(gca,'XTick', h(1:5:99));
-hline = refline(0,0.01)
-hline.Color = 'k';
-
-hline.LineStyle = '-.'
-
-vline = line([9 9], [0 0.16])
-vline.Color = 'k';
-vline.LineStyle = '-.'
-grid on
-
-xlim([0 100]);
-
-% add line at tipping point
-vline = line([9 9], [0 0.16])
-vline.Color = 'k';
-vline.LineStyle = '-.'
-set(findall(gcf,'-property','FontSize'),'FontSize',25)
-set(findall(gcf,'-property','LineWidth'),'LineWidth',3)
-abs(dydx(1:15))
-%There should be 9 optimal clusters (but test around this number)
-%for different measures, 9 clusters is the first number of clusters, after
-%which no significant (below 1%) reduction is achieved
 
 %%
 % =========================================================================
