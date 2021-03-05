@@ -531,7 +531,7 @@ min(coeff,[],1)
 % REVIEW 23/11/2020 loadings END
 % =========================================================================
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/PotentialBiomes/')
 %calculate from 2 to 20 biomes
 n_clusters = [2:20];
 %define how small biomes should be, 0.1% of the global ocean area up to 10%
@@ -616,165 +616,121 @@ grid on
 %using function findchangepts with 2 MaxNumChanges, since 1 does not find a
 %changing point!!! --> lower likely better, since less added error
 
-
+cd(folder_main)
 %% Producing biomes
-n_clusters = [2:20];
-for i = 8
-    load(horzcat('No_mean_PCA_biomes_',int2str(n_clusters(i)),'_v2_5_perc.mat'))
-    [smooth_annual_map, annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,0,4);
-    [uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,1,4);
-    save(horzcat('No_mean_PCA_biomes_annual_',int2str(n_clusters(i)),'_v2_5_perc'),'smooth_annual_map','annual_map',...
-        'uncertainty_smooth_annual_map','uncertainty_annual_map')
+
+% =========================================================================
+% We now produce biomes based on the choices tested above, i.e. 9 clusters
+% are optimal, 0.5% of the global ocean area is the minimum area for a
+% biome, and cluster centroids are weighted by the occurrence frequency of
+% each cluster member.
+% =========================================================================
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/PotentialBiomes/')
+
+load('No_mean_PCA_biomes_9_v2_5_perc.mat')
+[smooth_annual_map, annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,0,4);
+[uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,1,4);
+
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+save('No_mean_PCA_biomes_annual_9_v2_5_perc','smooth_annual_map','annual_map',...
+    'uncertainty_smooth_annual_map','uncertainty_annual_map')
+
+%plot the annual biome to see the structure
+plotSOM(smooth_annual_map,1,9)
+
+
+cd(folder_main)
+
+%% Testing the robustness of our biomes
+
+% =========================================================================
+% In this section we test the sensitivity of our optimal SOM to information
+% loss. First, we test the sensitivity of our the SOM is to loss of 
+% spatial/temporal information (individual pixels). Second, we test the 
+% sensitivity of our SOM to loss of features (species across the dataset).
+% =========================================================================
+
+%load helper variables
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+load('HelpVariables.mat')
+
+%load simple sort data
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+load('Simple_sort_Data.mat')
+
+
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/')
+%create matrix indicating which obsrvations should be deleted
+noisy_data_ind = No_nan_phyto_simple(:,1:30).*NaN;
+nsamples = size(noisy_data_ind,1);
+
+for fr = 1:30
+    nsamples_fr = round(nsamples*fr/100);
+    r_ind = randsample(nsamples,nsamples_fr);
+    noisy_data_ind(r_ind,fr) = fr;
 end
-
-
- plotSOM(smooth_annual_map,1,9)
-
- plotSOM(area_map,1,NaN)
-
-%calculate fraction of area that is uncertain
-uncertainty_fraction = n_clusters.*NaN;
-for i = 1:length(n_clusters)
-    load(horzcat('No_mean_PCA_biomes_annual_',int2str(n_clusters(i)),'_v2_5_perc.mat'))
-    tot_area = sum(area_map(~isnan(smooth_annual_map)));
-    uncertain_area = sum(area_map(~isnan(smooth_annual_map) & isnan(uncertainty_smooth_annual_map)));
-%    
-%      plotSOM(smooth_annual_map,1,NaN)
-%      plotSOM(uncertainty_smooth_annual_map,1,NaN)
-     uncertainty_fraction(i) = uncertain_area/tot_area
-%     jj = input('fdf')
-    
-end
-
-figure
-hold on
-grid on
-plot(n_clusters,uncertainty_fraction)
-
-
-
-
-%% Perform the same but for leaky biomes and lost species
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'LatLon')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'latchl')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'lonchl')
-
-%Leaky biomes
-
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Simple_sort_Data.mat')
-
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Scripts/Euler_scripts/Leaky_SOM/Euler_job')
-
-[noisy_data_ind] = make_noisy(No_nan_phyto_simple,30);
-
+%save noisy data indeces
 save('Noisy_data_ind','noisy_data_ind')
-%Run scripts on Euler_job
-Leaky_SOM1
-Leaky_SOM2
-Leaky_SOM3
-Leaky_SOM4
-Leaky_SOM5
+
+% =========================================================================
+% Now we again run a bash script "Euler_run_Robustness.sh to train 10
+% different SOMs. This again has to be done manually!!!!
+% =========================================================================
+
+% =========================================================================
+% ================= RUN Euler_run_Robustness.sh ===========================
+% =========================================================================
 
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/04Leaky_SOM/SOMs')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/Area_map.mat')
+% =========================================================================
+% After running the scripts and having the trained SOMs, we now produce
+% biomes for each robustness experiment
+% =========================================================================
 
+%First for spatio-temporal information loss
+%load area map
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+load('Area_map.mat')
 
-%load network, training data in both lat lon and simple
-fr = [1 5 10 20 30]
+fr = [1 5 10 20 30];
 for i =1:5
     %load network
-    str1 = horzcat('Leaky_SOM_',int2str(fr(i)))
+    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/SOMs/')
+    str1 = horzcat('Leaky_SOM_frac_',int2str(fr(i)))
     load(horzcat(str1,'.mat'))
-   
-    
-    %%
-    % =====================================================================
-    % Apply SOM trained with less data to the full dataset, then create
-    % biomes; UHE 25 July 2019
-    % =====================================================================
-    tic
-    [ classes_noise_all ] = Apply_SOM2( No_nan_phyto_simple, noise_net );
-    toc
-    %%
-    
-    n_clusters = [2:20]
-    cd('PCA_no_mean')
 
+    tic
+    [ classes_noise_all ] = Apply_SOM( No_nan_phyto_simple, noise_net );
+    toc
     
+    n_clusters = 9;
+  
     tic
     original_weights = noise_net.IW{1};
     %original_weights = bsxfun(@minus,original_weights,mean(original_weights));
     [~,~,latent,~,~] = pca(original_weights);
 
-    [r,c] = find(latent > 1);
+    [r,~] = find(latent > 1);
     clearvars latent
     %[coeff,score,latent,tsquared,explained]
-    [coeff,score,~,~,~] = pca(original_weights,'NumComponents',r(end));
-    toc
-    
-    for j = 1:length(n_clusters)
-        
-        
-        
-        [raw_monthly_maps, new_weights,~,~] = Calculate_biomesV2(noise_net, classes_noise_all,...
-            No_nan_phyto_simple, n_clusters(j),coeff);
-        n = n_clusters(j);
+    [coeff,~,~,~,~] = pca(original_weights,'NumComponents',r(end));
+    toc 
+  
+    [raw_monthly_maps, new_weights,~,~] = Calculate_biomes(noise_net, classes_noise_all,...
+        No_nan_phyto_simple, n_clusters,coeff);
+    n = n_clusters;
 
-        [smooth_map] = Clean_up_biomesV3( raw_monthly_maps,new_weights,...
-        area_map,0.5,4,0);
-        save(horzcat('V2_PCA_Leaky_biomes_',int2str(n_clusters(j)),'_fr_',int2str(fr(i)),'_5_perc'),...
-        'raw_monthly_maps','new_weights','smooth_map','n','classes_noise_all')
-    end
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/04Leaky_SOM/SOMs')
+    [smooth_map] = Clean_up_biomes( raw_monthly_maps,new_weights,...
+    area_map,0.5,4,0);
 
-
+    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/Biomes/')
+    save(horzcat('Leaky_biomes_',int2str(n_clusters),'_fr_',int2str(fr(i)),'_5_perc'),...
+    'raw_monthly_maps','new_weights','smooth_map','n','classes_noise_all')
+      
 end
 
-     plotSOM(uncertainty_annual_map,1,NaN)
-
-
-%Annual not really needed!!!
-name = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/04Leaky_SOM/SOMs/PCA_no_mean'
-listing = dir(name)
-cd(name)
-for i = 3:length(listing(1:end))
-    load(listing(i).name)
-    [smooth_annual_map, annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,0,4);
-    [uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,1,4);
-    save(horzcat('annual_',listing(i).name),'smooth_annual_map','annual_map',...
-        'uncertainty_smooth_annual_map','uncertainty_annual_map')
-end
-
+%Second, for feature loss
 %%
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'LatLon')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'latchl')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'lonchl')
-
-%lost species
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Scripts/Euler_scripts/Removal_species/Euler_job')
-
-[removed_data_ind] = make_noisy([1:size(No_nan_phyto_simple(:,5:end-1))]',100);
-
-%save('Removed_data_ind','removed_data_ind')
-%Run respecitve Euler_job --> better on euler and not locally --> takes
-%waay to long
-Remove_SOM01
-Remove_SOM02
-Remove_SOM03
-Remove_SOM04
-Remove_SOM05
-Remove_SOM06
-Remove_SOM07
-Remove_SOM08
-Remove_SOM09
-Remove_SOM10
-%% and for fraction as for leaky
-Remove_SOM_frac1
-Remove_SOM_frac5
-Remove_SOM_frac10
-Remove_SOM_frac20
-Remove_SOM_frac30
 
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Removed_species/SOMs')
 

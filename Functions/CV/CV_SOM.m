@@ -6,7 +6,7 @@ Parameters:
     fr (int): Fraction of data leave-out fraction. Note that the value
     is only a name and not the fraction itself. This is not ideal, but will
     leave it as is for the moment
-    num (int): ID of fold combination used
+    Num (int): ID of fold combination used
  
  Output:
     None. This function saves the output directly to a specified directory.
