@@ -684,10 +684,10 @@ save('Noisy_data_ind','noisy_data_ind')
 
 % =========================================================================
 % After running the scripts and having the trained SOMs, we now produce
-% biomes for each robustness experiment
+% biomes for each robustness experiment. First we produce biomes for the
+% spatio-temporal information loss experiment
 % =========================================================================
 
-%First for spatio-temporal information loss
 %load area map
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
 load('Area_map.mat')
@@ -712,7 +712,6 @@ for i =1:5
 
     [r,~] = find(latent > 1);
     clearvars latent
-    %[coeff,score,latent,tsquared,explained]
     [coeff,~,~,~,~] = pca(original_weights,'NumComponents',r(end));
     toc 
   
@@ -729,69 +728,43 @@ for i =1:5
       
 end
 
-%Second, for feature loss
-%%
+% =========================================================================
+% Now we produce biomes for the feature loss experiment
+% =========================================================================
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Removed_species/SOMs')
-
-
-%load network, training data in both lat lon and simple
-% fr = [1:10]
-fr = [1 5 10 20 30]
+fr = [1 5 10 20 30];
 for i =length(fr):-1:1
     %load network
-    str1 = horzcat('Removed_SOM_frac_',int2str(fr(i)))
+    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/FeatureLoss/SOMs/')
+    str1 = horzcat('Removed_SOM_frac_',int2str(fr(i)));
     load(horzcat(str1,'.mat'))
-
     
+    n_clusters = 9;
     
-    n_clusters = [2:20]
-%     cd('PCA_no_mean')
-    cd('PCA_no_mean_as_leaky')
     tic
     original_weights = removed_net.IW{1};
-    %original_weights = bsxfun(@minus,original_weights,mean(original_weights));
     [~,~,latent,~,~] = pca(original_weights);
 
-    [r,c] = find(latent > 1);
+    [r,~] = find(latent > 1);
     clearvars latent
-    %[coeff,score,latent,tsquared,explained]
-    [coeff,score,~,~,~] = pca(original_weights,'NumComponents',r(end));
+    [coeff,~,~,~,~] = pca(original_weights,'NumComponents',r(end));
     toc
     
-    for j = 1:length(n_clusters)
-        [raw_monthly_maps, new_weights,~,~] = Calculate_biomesV2(removed_net, removed_classes,...
-            tmp_phyto, n_clusters(j),coeff);
-        n = n_clusters(j);
-        
-        [smooth_map] = Clean_up_biomesV3( raw_monthly_maps,new_weights,...
-        area_map,0.5,4,0);
-        
-        save(horzcat('V2_PCA_Removed_biomes_',int2str(n_clusters(j)),'_',int2str(fr(i)),'_5_perc'),...
-        'raw_monthly_maps','new_weights','smooth_map','n','tmp_phyto')
-    end
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Removed_species/SOMs')
+    [raw_monthly_maps, new_weights,~,~] = Calculate_biomes(removed_net, removed_classes,...
+        tmp_phyto, n_clusters,coeff);
+    n = n_clusters;
 
+    [smooth_map] = Clean_up_biomes( raw_monthly_maps,new_weights,...
+    area_map,0.5,4,0);
 
+    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/FeatureLoss/Biomes/')
+    save(horzcat('Removed_biomes_',int2str(n_clusters),'_',int2str(fr(i)),'_5_perc'),...
+    'raw_monthly_maps','new_weights','smooth_map','n','tmp_phyto')
+    
 end
 
-plotSOM(smooth_map,5,NaN)
-%Annual not really needed!!! --> moved to Old folder
-name = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Removed_species/SOMs/PCA_no_mean'
-listing = dir(name)
-cd(name)
-for i = 3:length(listing(1:end))
-    load(listing(i).name)
-    [smooth_annual_map, annual_map] = aggregate_months(smooth_map,new_weights,area_map,tmp_phyto,0.5,0,4);
-    [uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,tmp_phyto,0.5,1,4);
-
-    save(horzcat('annual_',listing(i).name),'smooth_annual_map','annual_map',...
-        'uncertainty_smooth_annual_map','uncertainty_annual_map')
-end
 
 % =========================================================================
-% ALL DONE UNTIL HERE; UHE 29 JUL 2019, Methods are done, and are not to
-% be changed!!!!
 % Validation test yields 9 clusters, robustness shows around nine clusters,
 % the change caused by adding more is not "significant", despite the area
 % coverage being lower than for lower clusterings (we want the one that is
@@ -801,52 +774,50 @@ end
 % =========================================================================
 
 %% Compare the robustness of biomes (Table 2)
- % use "Compare_to_original_quantitative'
+
+% =========================================================================
+% Here we use the stand-alone script "CalculateRobustness" to first produce
+% seasonally corrected monthly biomes for our trained SOM, and for the SOMs
+% from the robustness experiments. Then we use the area-weighted Kappa
+% index to calculate the overlap between the seasonally corrected biomes.
+% This script was used to fill in Table 2 of the manuscript.
+% =========================================================================
+
+CalculateRobustness
 
 
-Compare_to_original_quantitative
+%% Calculate seasonal biomes
+
+% =========================================================================
+% To finalize all preparations prior to the analysis, we now produce 
+% seasonal biomes
+% =========================================================================
+
+%load monthly and annual biomes
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+load('No_mean_PCA_biomes_9_v2_5_perc.mat')
+load('No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
 
 
-%%
+% =========================================================================
+% In order to create seasonal biomes, we first need to seasonally correct
+% the data set by season, i.e. the month column in 
+% No_nan_phyto_simple dataset needs to be shifted by 6 months in the
+% Southern Hemisphere. This way, when speaking of biomes in fall, we can
+% show the location of biomes during austral and boreal fall in the same
+% map.
+% =========================================================================
 
-%9 biomes
-%calculate annual biomes
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Monthly_biomes/PCA_no_mean_v2/Latent_threshold/No_mean_PCA_biomes_9_v2_5_perc.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Monthly_biomes/PCA_no_mean_v2/Latent_threshold/No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
+%Create a map of the observation IDs, i.e. the rows
 
-%get area, number of pixels for each biomes
-values_smooth_map = unique(smooth_map(~isnan(smooth_map)))
-num_pixels = values_smooth_map.*NaN;
-for i = 1:length(values_smooth_map)
-    num_pixels(i) = length(find(smooth_map == values_smooth_map(i)))
-end
+%load data
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+load('Simple_sort_Data.mat')
 
-area_biome = ones(12,length(values_smooth_map)).*NaN;
-
-for m = 1:12
-    for i = 1:length(values_smooth_map)
-        
-        area_biome(m,i) = sum(area_map(smooth_map(m,:,:)==values_smooth_map(i)))/sum(area_map(~isnan(smooth_map(m,:,:))))
-    end
-end
-        
-
-for m = 1:12
-    all_values = reshape(smooth_map(m,~isnan(smooth_map(m,:,:))),[],1);
-    tabulate(all_values)
-
-    all_values = reshape(raw_monthly_maps(m,~isnan(raw_monthly_maps(m,:,:))),[],1);
-    tabulate(all_values)
-    jj = input('dfd')
-end
-
-num_pixels./sum(num_pixels)
-
-% correct No_nan_phyto by season
-%create maps with ID per pixel
-[ID_maps] = prepare2plotV2( [No_nan_phyto_simple(:,2:4),No_nan_phyto_simple(:,1)]);
+[ID_maps] = prepare2plot( [No_nan_phyto_simple(:,2:4),No_nan_phyto_simple(:,1)]);
 corrected_monthly_raw = ones(12,180, 360)*NaN;
 corrected_monthly_ID = corrected_monthly_raw;
+%shift Southern Hemisphere by 6 months
 for i =1:12
     if(i<7)
         j = mod(i+6,13);
@@ -854,32 +825,36 @@ for i =1:12
         j = mod(i+6,13) +1;
     end
     %i and j are the indices of thmatlab e months that need to be combined
-    corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);%raw_monthly_maps(i,91:end,:);%smooth_map(i,91:end,:);
-    corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); % raw_monthly_maps(j,1:90,:); %smooth_map(j,1:90,:); % 
+    corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:)
+    corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); 
     
     corrected_monthly_ID(i,91:end,:) = ID_maps(i,91:end,:);
     corrected_monthly_ID(i,1:90,:) = ID_maps(j,1:90,:);
 
 end
 
-%%
-%smooth corrected_monthly_raw
+% =========================================================================
+% The matrix "corrected_monthly_ID" now contains monthly maps of
+% observation IDs in the seasonally corrected months. The same applies for
+% "corrected_monthly_raw" but for the biome labels.
+% =========================================================================
 
-
-
-
-[corrected_monthly_smooth] = Clean_up_biomesV3( corrected_monthly_raw,new_weights,...
+%Smooth the new seasonally corrected monthly biomes
+[corrected_monthly_smooth] = Clean_up_biomes( corrected_monthly_raw,new_weights,...
 area_map,0.5,4,0);
 
-
-
-%%
-
+%reverse the map-data to matrix
 tic
-[Season_No_nan_phyto_simple] = reverse_prepare2plotV2( corrected_monthly_ID);
+[Season_No_nan_phyto_simple] = reverse_prepare2plot(corrected_monthly_ID);
 toc
+
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
 save('Seasonally_corrected_data','Season_No_nan_phyto_simple')
 
+% =========================================================================
+% Using the seasonally corrected monthly maps, and seasonally corrected
+% dataset (matrix) define seasonal maps
+% =========================================================================
 
 Season_obs = [Season_No_nan_phyto_simple(:,end), Season_No_nan_phyto_simple(:,1:3),...
     No_nan_phyto_simple(Season_No_nan_phyto_simple(:,end),5:end)];
@@ -902,27 +877,24 @@ for s = 1:4
 end
  
 
-
-
-for i = 1:4
-    plotSOM(season_map_smooth,i,9)
-    
-unique(season_map_smooth(i,~isnan(season_map_smooth(i,:,:))))
-    %plotSOM(uncertainty_smooth_seasonal_map,i,latchl,lonchl,9)
-end
-
- save('No_mean_PCA_biomes_seasonal_9_v2_5_perc','season_map_smooth','season_map',...
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+save('No_mean_PCA_biomes_seasonal_9_v2_5_perc','season_map_smooth','season_map',...
         'uncertainty_smooth_seasonal_map','uncertainty_season_map','Season_obs','corrected_monthly_smooth')
 
 
-unique(season_map_smooth(4,~isnan(season_map_smooth(4,:,:))))
 
 
 
 
 
 
-%% New start
+
+%% Analysis
+
+% =========================================================================
+% The analysis section is performed on the stand-alone analysis script
+% "Analysis.m".
+% =========================================================================
 
 clear all
 folder_main = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach'
