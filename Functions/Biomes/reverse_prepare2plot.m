@@ -1,7 +1,14 @@
 function [classes] = reverse_prepare2plot(new_map)
-%Function converts map data to vector
-%new_map contains the map (1x180x360)
-%old_sequence contains the original/clustered classes
+%Function converts map data to vectorized data
+
+%{
+Parameters:
+    new_map (matrix): 3D matrix of with map of biomes (m x 180 x 360)
+
+ Output:
+    classes (vetor): Vector of biome labels
+
+%}
 
 
 classes = [NaN NaN NaN NaN];
@@ -11,7 +18,6 @@ for m = 1:size(new_map,1)
             classes = [classes;[lon, lat, m, new_map(m,lat,lon)]];
         end
     end
-    m
 end
 classes(isnan(classes(:,end)),:) = [];
 

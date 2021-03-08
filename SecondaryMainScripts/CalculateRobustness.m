@@ -18,7 +18,7 @@ if isfile('Seasonally_corrected_monthly_biomes.mat')
     load('Seasonally_corrected_monthly_biomes.mat')
 else
     %get seasonally corrected version
-    corrected_monthly_raw = ones(12,180, 360)*NaN;
+    corrected_monthly_raw = NaN(12,180, 360);
     for i =1:12
         if(i<7)
             j = mod(i+6,13);
@@ -45,7 +45,7 @@ fr = [1, 5, 10, 20, 30];
 for ii = 1:length(fr)
     
     load(horzcat('Leaky_biomes_9_fr_',int2str(fr(ii)),'_5_perc.mat'))
-    corrected_monthly_raw = ones(12,180, 360)*NaN;
+    corrected_monthly_raw = NaN(12,180, 360);
     for i =1:12
         if(i<7)
             j = mod(i+6,13);
@@ -72,7 +72,7 @@ fr = [1, 5, 10, 20, 30];
 for ii = 1:length(fr)
     
     load(horzcat('Removed_biomes_9_',int2str(fr(ii)),'_5_perc.mat'))
-    corrected_monthly_raw = ones(12,180, 360)*NaN;
+    corrected_monthly_raw = NaN(12,180, 360);
     for i =1:12
         if(i<7)
             j = mod(i+6,13);
@@ -125,7 +125,7 @@ L30 = Lcorrected_monthly_smooth;
 %%
 %kappa analysis for spatio-temporal information loss
 for i = 1:5
-    kappas = ones(1,12).*NaN;
+    kappas = NaN(1,12);
     switch i
         case 1
             data = L1;
@@ -161,7 +161,7 @@ end
 
 %kappa analysis for feature loss
 for i = 1:5
-    kappas = ones(1,12).*NaN;
+    kappas = NaN(1,12);
     switch i
         case 1
             data = R1;

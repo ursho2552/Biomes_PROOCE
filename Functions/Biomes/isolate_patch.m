@@ -1,6 +1,27 @@
 function [patch_map,rr]  = isolate_patch(old_map,label, area_map, tot_area, fraction, conn)
 %Function labels all patches and isolates them
 
+%{
+Parameters:
+    old_map (matrix): 2D matrix of biome map with the dimension
+        1 x 180 x 360 
+    label (int): Label of a biome in the biome map
+    area_map (matrix): Map of the area per 1°-pixel
+    tot_area (float): Total area of surface ocean where an observation is
+        available across all months
+    fraction (float): Minimum area needed for a biome. This area is given as a
+        percentage of area of global surface ocean where there are observations
+    conn (int): Connectivity of 1°-pixels. Can be 4, i.e. only pixels with
+        adjacent edges or 8, i.e. pixels with adjacent edges and corners
+
+ 
+ Output:
+    patch_map (matrix): Map of the location of the chosen label,
+    highlighting all patches with a different ID
+    rr (vector): Labels of the patches linked to one biome label
+%}
+
+
 tot = tot_area;
 %define a threshold of the minimum area for a patch
 threshold = tot*fraction/100;
@@ -101,7 +122,7 @@ threshold = tot*fraction/100;
     
     labels_whole = unique(patch_map(~isnan(patch_map)));    
     %initialize vector that stores the area and the label
-    size_whole = ones(length(labels_whole),2)*NaN;
+    size_whole = NaN(length(labels_whole),2);
     size_whole(:,1) = labels_whole;
     %loop over each label in whole_map and store the size (area)
 

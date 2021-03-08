@@ -182,7 +182,7 @@ cd(folder_main)
 % =========================================================================
 
 %allocate matrix
-LatLon = ones(180*360,5).*NaN;
+LatLon = NaN(180*360,5);
 %define ID
 LatLon(:,1) = 1:size(LatLon,1);
 lons = -179.5:179.5;
@@ -269,7 +269,11 @@ for i = 1:length(tmp_labels_phyto)
 end
 
 %save the dataset
-%save('Names_species','name_genus_phylum');
+if isfile('Names_species.mat')
+    disp('File already exists!')
+else
+    save('Names_species','name_genus_phylum')
+end
 
 cd(folder_main)
 %% Table 1 in manuscript
@@ -324,7 +328,7 @@ cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_
 str1 = 'Single_run_';
 str2 = '_error.mat';
 nn = 15;
-error_neurons = ones(1,nn)*NaN;
+error_neurons = NaN(1,nn)*NaN;
 for i = 1:nn
     
         load(horzcat(str1,int2str(i),str2),'total_error')
@@ -382,7 +386,7 @@ hold off;
 str1 = 'Single_run_epoch';
 str2 = '_error.mat';
 nn = 11;
-error_neurons_ep = ones(1,nn)*NaN;
+error_neurons_ep = NaN(1,nn)*NaN;
 for i = 1:nn
     if(i <= 8)
     
@@ -477,7 +481,7 @@ if isfile('Area_map.mat')
     load('Area_map.mat')
 else
     %calculate an area map for area weighted calculations
-    area = ones(size(LatLon,1),3)*NaN;
+    area = NaN(size(LatLon,1),3);
     area(:,1:2) = LatLon(:,2:3);
     %LatLon (2 is Lon and 3 is Lat), for every combination get the area in km
     earthellipsoid = referenceSphere('earth','km');
@@ -829,7 +833,7 @@ cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_
 load('Simple_sort_Data.mat')
 
 [ID_maps] = prepare2plot( [No_nan_phyto_simple(:,2:4),No_nan_phyto_simple(:,1)]);
-corrected_monthly_raw = ones(12,180, 360)*NaN;
+corrected_monthly_raw = NaN(12,180, 360);
 corrected_monthly_ID = corrected_monthly_raw;
 %shift Southern Hemisphere by 6 months
 for i =1:12
@@ -877,7 +881,7 @@ end
 Season_obs = [Season_No_nan_phyto_simple(:,end), Season_No_nan_phyto_simple(:,1:3),...
     No_nan_phyto_simple(Season_No_nan_phyto_simple(:,end),5:end)];
 seasons = [3 4 5;6 7 8;9 10 11;12,1,2];
-season_map = ones(4,180,360).* NaN;
+season_map = NaN(4,180,360);
 season_map_smooth = season_map;
 uncertainty_smooth_seasonal_map = season_map;
 uncertainty_season_map = season_map;

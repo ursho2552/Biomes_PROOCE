@@ -1,11 +1,26 @@
 function [new_map,tmp_map] = compare_edges(map,nan_map,h,conn)
-%get the left and right edges, if they are at the same latitude, then
-%change them to have the same label
+% Function compares the edges of the 2D map, to ensure that biomes 
+% expanding across the edges are recognized correctly
+
+%{
+Parameters:
+    map (matrix): 2D matrix of with map of biomes/patches (1 x 180 x 360) 
+    nan_map (matrix): 2D matrix of with map of missing values (1 x 180 x 360)
+    h (int) : Deprecated. Use only h=1
+    conn (int): Connectivity of 1°-pixels. Can be 4, i.e. only pixels with
+        adjacent edges or 8, i.e. pixels with adjacent edges and corners
+ 
+ Output:
+    new_map (matrix): Map of biomes/patches after changing the labels, if a
+        biome/patch expands across the edges of the matrix
+    tmp_map (matrix): Deprecated. Contains copy of map without any changes
+
+%}
 
     if(h == 4 || h == 5)
 
         %% New Version
-        %if not already done
+
         new_map = squeeze(map);
         tmp_map = squeeze(nan_map);
         %get left side
@@ -54,8 +69,6 @@ function [new_map,tmp_map] = compare_edges(map,nan_map,h,conn)
         tmp_map(1,:) = [];
         tmp_map(end,:) = [];
     else
-        %% Old Version to match pacific basin
-        %
         %% Changed on 17/07/2019
         %if not already done
         new_map = squeeze(map);
@@ -98,8 +111,8 @@ function [new_map,tmp_map] = compare_edges(map,nan_map,h,conn)
             %go through each element and change on map
             for i = 1:size(unique_pairs,1)
                 %find all IDs with the same number at the first or second column
-                [r1 c1] = find(unique_pairs(:,1) == unique_pairs(i,1));
-                [r2 c2] = find(unique_pairs(:,2) == unique_pairs(i,2));
+                [r1, ~] = find(unique_pairs(:,1) == unique_pairs(i,1));
+                [r2, ~] = find(unique_pairs(:,2) == unique_pairs(i,2));
 
                 to_change = [unique_pairs(r1,2);unique_pairs(r2,1)];
                 for j = 1:length(to_change)

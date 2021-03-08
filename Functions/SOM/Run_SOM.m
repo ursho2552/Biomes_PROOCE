@@ -1,8 +1,6 @@
 function Run_SOM(neurons,epochs,directory_data,directory_out,file_out,iter)
 % Funtion to run SOM given the number of neurons, and epochs
 
-
-
 %{
 Parameters:
     neurons (int): Number of neurons to use, where nuerons^2 represents the

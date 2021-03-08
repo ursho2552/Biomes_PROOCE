@@ -46,7 +46,7 @@ end
 
 old_weights = net.IW{1};%
 
-new_weights = ones(n_clusters,size(old_weights,2)).*NaN;
+new_weights = NaN(n_clusters,size(old_weights,2));
 
 for i = 1:n_clusters   
     new_weights(i,:) = mean(old_weights(T(:,n_clusters-1) == i,:),1,'omitnan');

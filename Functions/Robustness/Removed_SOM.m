@@ -1,6 +1,16 @@
 function Removed_SOM(fr)
 % Function traines SOM after removing a fraction fr of the features
 
+%{
+Parameters:
+    fr (int): Percentage of features that should be excluded from the
+        original dataset prior to training
+ 
+ Output:
+    None. This function directly saves the trained SOMs to the hardcoded
+    directory (Should be changed at some point.
+
+%}
 
     %load original data
     cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')

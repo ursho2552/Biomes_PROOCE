@@ -1,7 +1,23 @@
 function [h,Fig,cmap2] = plotSOM( new_data,month,nr_classes)%,p)
-
 %Function to plot a map
 
+%{
+Parameters:
+    new_data (matrix): Map data with dimension n x 180 x 360
+    month (int): section of the map new_data that should be plotted.
+        Usually is the month. Thus month is between 1 and n
+    nr_classes (int): Number of unique classes/labels new_data. If 
+        nr_classes is given then discrete colors are shown. If NaN is given
+        the colorbar will be continuous
+   
+ Output:
+    h (Figure object): Figure handle
+    Fig (matrix): 2D version of the matrix that is plotted
+    cmap2 (matrix): Colormap used to plot the map
+
+%}
+
+new_classes
 
 
 lons = -179.5:179.5;
@@ -36,7 +52,7 @@ levels=[0.5 1 1.5 2.0];
 nlat = length(lats);
 nlon = length(lons);
 
-Fig = ones(nlat,nlon).*NaN; %add one for the definition of the point 0.5 or 180.5
+Fig = NaN(nlat,nlon); %add one for the definition of the point 0.5 or 180.5
 if(month < 13)
     for i=1:nlat
         for j=1:nlon

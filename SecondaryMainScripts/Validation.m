@@ -33,7 +33,7 @@ for j = 1:length(fraqs)
     fr = fraqs(j);
     Num = Num_boundaries(j,2);
     %We tested different metrics but took the most used one in the end
-    difference = ones(1,Num,n)*NaN;
+    difference = NaN(1,Num,n);
     FOM = difference;
     difference_alt = difference;
     
@@ -126,7 +126,7 @@ for j = 1:length(fraqs)
             %calculate weights
 
             weights = noise_net.IW{1};          
-            new_weights = ones(n_clusters,size(weights,2))*NaN;
+            new_weights = NaN(n_clusters,size(weights,2));
 
             for ii = 1:n_clusters
                 tmp = neuron_maps(training_map_monthly == ii);

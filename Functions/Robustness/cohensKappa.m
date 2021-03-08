@@ -1,5 +1,15 @@
 function kappa = cohensKappa(original_map, new_map)
+% Function to calculate the area weighted Kappa index between two maps
 
+%{
+Parameters:
+    original_map (matrix): Map data with dimension n x 180 x 360
+    new_map (matrix): Map data with dimension n x 180 x 360
+   
+ Output:
+    kappa (float): Kappa index
+
+%}
     %load area map
     cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
     load('Area_map.mat')
@@ -63,8 +73,6 @@ end
 
 
 %% Test behaviour
-
-
 % cohensKappa(orig_map,changed_data)
 % 
 % cohensKappa(orig_map,orig_map)

@@ -90,7 +90,7 @@ end
 %% Plot error-metric as a function of number of neurons
 
 %merge single runs into a single one
-error_neurons = ones(1,size(num_neurons,1)).*NaN;
+error_neurons = NaN(1,size(num_neurons,1));
 for i=1:size(num_neurons,1)
     load(horzcat(file,'Single_run_',int2str(i),'_error.mat'));
     error_neurons(i) = total_error;
@@ -130,7 +130,7 @@ optimal_dim = [31,31];
 %% Find optimal number of epochs
 
 epoch = [1, 5, 10, 20, 50, 100, 200, 300, 400, 500, 700, 1000];
-error_epoch =ones(size(epoch,2),1)*NaN;
+error_epoch = NaN(size(epoch,2),1);
 
 computing_time_ep = zeros(1,size(epoch,2));
 

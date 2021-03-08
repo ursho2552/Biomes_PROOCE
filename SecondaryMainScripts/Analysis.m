@@ -1,38 +1,60 @@
+%% Analysis
+
+% =========================================================================
+% After producing biomes on a monthly, seasonal, and annual scale, we now
+% analyse their location and spatio-temporal evolution, their species
+% composition, differences in between and whithin biome-composition, 
+% core, common or indicator speces found in biomes, the species networks, 
+% and the environmental conditions of each biome
+% =========================================================================
+
+% =========================================================================
+% This script is a stand-alone script that uses the monthly, seasonal,
+% annual biomes, and sometimes the raw presence/absence projections. Thus
+% we first make sure that our workspace is empty, and everything is setup
+% correctly.
+% =========================================================================
+
+
 clear all
 folder_main = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach'
 addpath(genpath(folder_main))
 cd(folder_main)
 
 % =========================================================================
-% ================== Analysis =============================================
+% Load all variables needed
 % =========================================================================
 
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error/Single_run_11.mat')
+%load trained SOM
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/'
+load('Single_run_11.mat')
+
 %load help variables
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'LatLon')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'latchl')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/HelpVariables2.mat', 'lonchl')
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+load('HelpVariables.mat')
+load('Area_map.mat')
 
 %construct or load simplified version of raw data
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Transformed_CompleteSuitePhyto.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Simple_sort_Data.mat')
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+load('Simple_sort_Data.mat')
+load('Transformed_CompleteSuitePhyto.mat')
+load('Seasonally_corrected_data.mat')
+load('Names_species')
 
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Monthly_biomes/PCA_no_mean_v2/Latent_threshold/No_mean_PCA_biomes_9_v2_5_perc.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Monthly_biomes/PCA_no_mean_v2/Latent_threshold/No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Monthly_biomes/PCA_no_mean_v2/Latent_threshold/No_mean_PCA_biomes_seasonal_9_v2_5_perc.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Names_species.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Monthly_biomes/PCA_no_mean_v2/Latent_threshold/Seasonally_corrected_data.mat')
-
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/Area_map.mat')
+%load biomes
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+load('No_mean_PCA_biomes_9_v2_5_perc.mat')
+load('No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
+load('No_mean_PCA_biomes_seasonal_9_v2_5_perc.mat')
 
 
+%% Sort biomes by size
 
-%%
 % =========================================================================
 % Change label numbering using descending mean area; UHE 09/08/2019
 % =========================================================================
 
-
+%Calculate area of biomes on a monthly basis
 n_clusters = 9
 area_biome = ones(n_clusters,12).*NaN;
 tmp_map = corrected_monthly_smooth;
@@ -42,11 +64,15 @@ for m = 1:12
         area_biome(i,m) = sum(area_map(tmp_map(m,:,:) == i))/tot_area;
     end
 end
- area_biome(area_biome == 0) = NaN;
+area_biome(area_biome == 0) = NaN;
+
+%Calculate mean area across all months and sort in descending order
 [B I] = sort(mean(area_biome,2,'omitnan'),'descend')
 aa = area_biome(I,:)'
+
+%allocate new matrices to store "sorted" biomes
 corr_smooth_annual_map = smooth_annual_map;
-corr_season_smooth = ones(4,180,360).*NaN;%season_map_smooth;
+corr_season_smooth = ones(4,180,360).*NaN;
 corr_corrected_monthly_smooth = ones(12,180,360).*NaN;
 corr_corrected_monthly_raw = ones(12,180,360).*NaN;
 for i = 1:n_clusters

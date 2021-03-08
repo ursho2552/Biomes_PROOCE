@@ -1,16 +1,31 @@
-function [Merger_distance, T_all,labels] = DaviesBouldinDendrogram( method,net,classes, r1,...
+function [Merger_distance, T_all,labels] = DaviesBouldinDendrogram( metric,net,classes, r1,...
     index,link, get_figs)
-%function to cluster data "net" and plotting the resulting dendrogram
+% Function to cluster the trained neurons and plotting the resulting
+% dendrogram
+
 %{
-INPUTS:
-method: string specifying the distance metric
-(spearman,euclidean,cityblock)
-net: SOM (index = 1) or data matrix (index ~= 1) containing the data, observation as rows and attributes
-as columns
-r1 and r2: number of clusters as a sequence, e.g. from 2 to 100
-get_figs: boolean flag for printing dendrogram
-link: string specifying the clustering link
+Parameters:
+    metric (str): Metric used to measure the distance between the different
+        componenets. See linkage function:
+        (https://ch.mathworks.com/help/stats/linkage.html?searchHighlight=linkage&s_tid=srchtitle)
+    net (Network or matrix): Trained SOM 
+    classes (vector): Labels of the observations
+    r1 (int): Minimum number of clusters
+    index (bool): Flag specifying whether the data is a Matlab network or a
+        matrix of observations and features. 1 for network, 0 for matrix
+    link (str): Linkage method used for clustering. See linkage function:
+        (https://ch.mathworks.com/help/stats/linkage.html?searchHighlight=linkage&s_tid=srchtitle)
+    get_figs (bool): Flag to indicate whether or not to print the
+        dendrogram. 1 to print dendrogram
+ 
+ Output:
+    Merger_distance (matrix): Matrix with the distances between clusters
+    T_all (matrix): Cluster label of each observation in net after defining r1
+    up to the meximum number of possible clusters
+    labels (vector): All possible labels given the size of net
+
 %}
+
 
 %% Prepare data depending on format
     if(index == 1)
@@ -33,8 +48,8 @@ link: string specifying the clustering link
     full_labels(available_classes== 1) = [];
     r2_full = 100;%r2-sum(available_classes);
 % cluster data
-    Z0 = linkage(data_nan,link,method);
-    Z = linkage(full_data,link,method);
+    Z0 = linkage(data_nan,link,metric);
+    Z = linkage(full_data,link,metric);
     Merger_distance = Z;
     T = cluster(Z,'maxclust',r1:r2_full);
 %% Print figures
@@ -78,6 +93,8 @@ link: string specifying the clustering link
         hold off;
 
     else
+        %this part is deprecated and does not contribute anything to the
+        %current function
         orig = NaN;
         EVA1 = NaN;
         EVA2 = NaN;

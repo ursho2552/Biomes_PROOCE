@@ -2,25 +2,34 @@ function [raw_map] = Clean_up_biomes( raw_map,weights,...
     area_map,fraction,conn,flag)
 % Function creates spatially coherent biomes by reassigning small patches 
 % to the surrounding most similar patch
+
 %{
-INPUTS:
-    raw_map: is the map after clustering the neurons, e.g. on a monthly scale
-    weights: the neuron weights after first clustering
-    area_map: map with area for each 1°x1° pixel
-    fraction: fraction of area under which a patch is defined
-    conn: degree of connection of a pixel to define patches
-    raw_map = new_monthly_maps;
-    weights = new_weights;
-    fraction = 1;
-    conn = 4
+Parameters:
+    raw_map (matrix): 2D matrix of aggregated maps with the dimension
+        1 x 180 x 360 
+    weights (matrix): Weights of trained neurons with dimension m x k, with
+        m as the number of clusters and k the number of features
+    area_map (matrix) : Map of the area per 1°-pixel
+    fraction (float): Minimum area needed for a biome. This area is given as a
+        percentage of area of global surface ocean where there are observations
+    conn (int): Connectivity of 1°-pixels. Can be 4, i.e. only pixels with
+        adjacent edges or 8, i.e. pixels with adjacent edges and corners
+    flag (bool): Flag to visualize the uncertainty, i.e. all 1°-pixels that
+        do not have a unique majority occurrence frequency of a label across
+        the n months
+ 
+ Output:
+    raw_map (matrix): Aggregated maps after smoothing
+
 %}
+
     %get a map denoting pixels that have at least one observation
     obs_map = mean(raw_map,1,'omitnan');
     %calculate total available area
     tot_area = sum(area_map(~isnan(obs_map)));
     %for each label in raw_map, get the fraction of area coverage
     sequence_labels = unique(raw_map(~isnan(raw_map)));
-    area_per_label = ones(length(sequence_labels),size(raw_map,1)).*NaN;
+    area_per_label = NaN(length(sequence_labels),size(raw_map,1));
     for i = 1:length(sequence_labels)
         for j = 1:size(raw_map,1)
             area_per_label(i,j) = sum(area_map(raw_map(j,:,:) == sequence_labels(i)))./tot_area;

@@ -5,9 +5,16 @@ function [ new_classes] = reduce_classes( T, classes)
 %new labels (new_classes), furthermore it gives a matrix where we can see
 %which old neruon labels are now summarized by the new ones (new_labels)
 
+%{
+Parameters:
+    T (matrix): Matrix of the cluster correspondance of each observation at
+    a specific clustering level
+    classes (vector): Labels of the observations
+ 
+ Output:
+    new_classes (vector): Labels after clustering
 
-%T is a vector which tells me for every neuron what the new label should be
-%classes is a matrix (x by 3) which tells me the label of each observation
+%}
 
     new_classes = classes;
     new_classes(:,3) = NaN;
