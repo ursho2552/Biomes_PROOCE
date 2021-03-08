@@ -16,7 +16,7 @@ Parameters:
     %get the different months in the data
     index = unique(classes(:,3));
 
-    map_classes = ones(length(index),180,360)*NaN;
+    map_classes = NaN(length(index),180,360);
     for m = 1:length(index)
         tmp = classes(classes(:,3) == index(m),:);
         for i = 1:length(tmp)

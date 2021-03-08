@@ -36,7 +36,7 @@ Parameters:
         sub = [sub,classes];
 
         n1 = unique(classes);
-        qe =ones(n1(end),1)*NaN;
+        qe =NaN(n1(end),1);
         for i = 1:n1(end)
             sub_tmp = sum(sub(sub(:,2) == i,1));
             qe(i) = sub_tmp/length(sub(sub(:,2) == i));
@@ -52,7 +52,7 @@ Parameters:
         sub = [sub,classes];
 
         n1 = unique(classes);
-        qe =ones(n1(end),1)*NaN;
+        qe =NaN(n1(end),1);
         for i = 1:n1(end)
             sub_tmp = sum(sub(sub(:,2) == i,1));
             qe(i) = sub_tmp/length(sub(sub(:,2) == i)); %or just mean()
@@ -67,12 +67,12 @@ Parameters:
     %observation and neuron
 
     [n, m] = size(refvec);
-    weights_with_label = ones(n,m+1)*NaN;
+    weights_with_label = NaN(n,m+1);
     for i = 1:size(refvec,1)
         weights_with_label(i,:) = [refvec(i,:),i];
     end
 
-    bmu2 = ones(size(data,1),1)*NaN;%vector containing the second BMU
+    bmu2 = NaN(size(data,1),1);%vector containing the second BMU
 
     for i = 1:size(data,1)
         bmu2(i) = find_2_bmu( data(i,:),classes(i), refvec, 1:length(refvec),dist_metric);
@@ -88,7 +88,7 @@ Parameters:
     full_neighbors = full(neighbors);
 
     n = size(bmu2,1);
-    adjacent = ones(size(bmu2,1),1)*NaN;
+    adjacent = NaN(size(bmu2,1),1);
     for i = 1:n
       if (classes(i) < bmu2(i))
           %then search in full_neighbors using bmu2 as the first index

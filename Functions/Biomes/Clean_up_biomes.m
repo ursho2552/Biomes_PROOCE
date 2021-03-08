@@ -40,7 +40,7 @@ Parameters:
     sequence_labels = sequence_labels(I);
 
     %get similarity matrix for each label
-    matrix_sequence = ones(size(sequence_labels,1)).*NaN;
+    matrix_sequence = NaN(size(sequence_labels,1));
     for i = 1:size(sequence_labels,1)
         neuron_label = sequence_labels(i);
         D = pdist2(weights(neuron_label,:),weights,'cityblock');

@@ -17,7 +17,7 @@
 
 
 clear all
-folder_main = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach'
+folder_main = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach';
 addpath(genpath(folder_main))
 cd(folder_main)
 
@@ -26,7 +26,7 @@ cd(folder_main)
 % =========================================================================
 
 %load trained SOM
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/'
+cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/')
 load('Single_run_11.mat')
 
 %load help variables
@@ -55,8 +55,8 @@ load('No_mean_PCA_biomes_seasonal_9_v2_5_perc.mat')
 % =========================================================================
 
 %Calculate area of biomes on a monthly basis
-n_clusters = 9
-area_biome = ones(n_clusters,12).*NaN;
+n_clusters = 9;
+area_biome = NaN(n_clusters,12);
 tmp_map = corrected_monthly_smooth;
 for m = 1:12
     for i = 1:n_clusters
@@ -67,14 +67,14 @@ end
 area_biome(area_biome == 0) = NaN;
 
 %Calculate mean area across all months and sort in descending order
-[B I] = sort(mean(area_biome,2,'omitnan'),'descend')
-aa = area_biome(I,:)'
+[B, I] = sort(mean(area_biome,2,'omitnan'),'descend');
+area_biome_sorted = area_biome(I,:)'
 
 %allocate new matrices to store "sorted" biomes
 corr_smooth_annual_map = smooth_annual_map;
-corr_season_smooth = ones(4,180,360).*NaN;
-corr_corrected_monthly_smooth = ones(12,180,360).*NaN;
-corr_corrected_monthly_raw = ones(12,180,360).*NaN;
+corr_season_smooth = NaN(4,180,360);
+corr_corrected_monthly_smooth = NaN(12,180,360);
+corr_corrected_monthly_raw = NaN(12,180,360);
 for i = 1:n_clusters
     
     corr_smooth_annual_map(smooth_annual_map == I(i)) = i;
@@ -86,18 +86,24 @@ end
 %safe biomes with corrected labels
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
 
-save('Seasonally_corrected_original','corr_smooth_annual_map','corr_season_smooth','corr_corrected_monthly_smooth')
-
+%save the dataset
+if isfile('Seasonally_corrected_original.mat')
+    disp('File already exists!')
+else
+    save('Seasonally_corrected_original','corr_smooth_annual_map','corr_season_smooth','corr_corrected_monthly_smooth')
+end
 
 cd(folder_main)
-% get min and max monthly area
-%% Data for Table 3
-max_area = max(area_biome,[],2);
-round(1000*max_area(I))/10
-area_biome(isnan(area_biome)) = 0
-min_area = min(area_biome,[],2);
-round(1000*min_area(I))/10
 
+%% Data for Table 3 in manuscript
+
+area_biome(isnan(area_biome)) = 0;
+max_area = max(area_biome,[],2);
+min_area = min(area_biome,[],2);
+
+%print max, min, and mean area
+round(1000*max_area(I))/10
+round(1000*min_area(I))/10
 round(1000*B)/10
 
 %% Figure 2
@@ -105,29 +111,29 @@ round(1000*B)/10
 % Plot annual biomes; UHE 09/08/2019
 % =========================================================================
 plotSOM(corr_smooth_annual_map,1,8)
+
 hold on;
-cmap = morgenstemning(12)
+cmap = morgenstemning(12);
 [cmap_tmp] = shuffle_colormap(cmap);
 [cmap_tmp1] = shuffle_colormap(cmap_tmp);
 
-
-cmap = ametrine(12)
+cmap = ametrine(12);
 [cmap_tmp] = shuffle_colormap(cmap);
 [cmap_tmp2] = shuffle_colormap(cmap_tmp);
 
-cmap = isolum(12)
+cmap = isolum(12);
 [cmap_tmp] = shuffle_colormap(cmap);
 [cmap_tmp3] = shuffle_colormap(cmap_tmp);
 
-comb_cmap = [cmap_tmp2([2,1,3],:);cmap_tmp1(7,:);cmap_tmp3(5,:);cmap_tmp1(8,:);cmap_tmp1(9,:);cmap_tmp1(4,:)]
+comb_cmap = [cmap_tmp2([2,1,3],:);cmap_tmp1(7,:);cmap_tmp3(5,:);cmap_tmp1(8,:);cmap_tmp1(9,:);cmap_tmp1(4,:)];
 
 colormap(comb_cmap(1:8,:))
-c = colorbar
+c = colorbar;
 set( c, 'YDir', 'reverse' );
 [positions] = get_ticks_centered(8);
 c.YTick = positions;
 c.TickLabels = {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
-    '(7) PEU', '(8) SMN'}
+    '(7) PEU', '(8) SMN'};
 set(findall(gcf,'-property','FontSize'),'FontSize',30)
 set(findall(gcf,'-property','LineWidth'),'LineWidth',3)
 
@@ -153,7 +159,7 @@ end
 % =========================================================================
 % Get area of annual and seasonal biomes; UHE 09/08/2019
 % =========================================================================
-area_seasonal = ones(9,4).*NaN;
+area_seasonal = NaN(9,4);
 for s = 1:5
     for i = 1:n_clusters
         if(s<5)
@@ -171,7 +177,7 @@ area_biomes  = area_biomes*100
 
 %% Figure A.11
 
-diff_maps = ones(4,180,360).*NaN;
+diff_maps = NaN(4,180,360);
 for s = 1:4
     for i = 1:180
         for j = 1:360
@@ -205,7 +211,7 @@ area_diff;
 %% Find average latitude of biomes
 n_clusters = 8
 abs_latchl = abs(latchl);
-median_lat = ones(12,n_clusters).*NaN;
+median_lat = NaN(12,n_clusters);
 for m = 1:12
     for i = 1:n_clusters
         [r c] = find(squeeze(corr_corrected_monthly_smooth(m,:,:)) == i);
@@ -307,7 +313,7 @@ plotSOM(monthly_richness_map,1,NaN)
 mean_richness_map(mean_richness_map==0) = NaN;
 plotSOM(mean_richness_map,13,NaN)
 
-num_species = ones(12,8).*NaN;
+num_species = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         num_species(m,i) = nanmean(monthly_richness_map(m,corr_corrected_monthly_smooth(m,:,:) == i));
@@ -320,7 +326,7 @@ prctile(num_species,75,1)-prctile(num_species,25,1)
 
 
 %get sum for each latitude and reproduce Damianos curve (Fig 1 in Global pattern of phytoplankton diversity...) 
-sum_lats = ones(180,1).*NaN
+sum_lats = NaN(180,1);
 for i = 1:180
     sum_lats(i,1) = nanmean(mean_richness_map(1,i,:),3);
 end
@@ -334,7 +340,7 @@ plotSOM(corrected_monthly_ID,2,NaN)
 
 Season_obs = [Season_corr_classes(:,1:4), No_nan_phyto_simple(Season_corr_classes(:,1),5:end)];
 
-num_species_month = ones(12,8).*NaN;
+num_species_month = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         %get IDs from map
@@ -344,7 +350,7 @@ for m = 1:12
 end
 
 % Safety check
-num_species_monthV2 = ones(12,8).*NaN;
+num_species_monthV2 = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         %get IDs from map
@@ -357,7 +363,7 @@ end
 % Safety check 2
 Season_obs = [Season_corr_classes(:,1:4), sum(No_nan_phyto_simple(Season_corr_classes(:,1),5:end-1),2)];
 [mean_richness_map] = prepare2plotV2(Season_obs(:,2:end));
-num_species_monthV2 = ones(12,8).*NaN;
+num_species_monthV2 = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         %get IDs from map
@@ -366,7 +372,7 @@ for m = 1:12
     end
 end
 %% get turnover
-turnover_map = ones(1,180,360).*NaN;
+turnover_map = NaN(1,180,360);
 for i = 1:180
     for j = 1:360
         tmp_all = NaN;
@@ -389,13 +395,13 @@ for i = 1:180
 end
 %%
 plotSOM(turnover_map,1,NaN)
-turnover_mean_annual = ones(n_clusters,2);
+turnover_mean_annual = NaN(n_clusters,2);
 for n = 1:n_clusters
     turnover_mean_annual(n,1) = median(turnover_map(corr_smooth_annual_map == n),'omitnan');
     turnover_mean_annual(n,2) = iqr(turnover_map(corr_smooth_annual_map == n));
 end
 %% Turnover on a seasonal scale
-turnover_map = ones(4,180,360).*NaN;
+turnover_map = NaN(4,180,360);
 
 seasons = [3 4 5;6 7 8;9 10 11;12,1,2];
 for s = 1:4
@@ -422,7 +428,7 @@ for s = 1:4
     end
     s
 end
-turnover_mean = ones(n_clusters,5).*NaN;
+turnover_mean = NaN(n_clusters,5);
 
 for n = 1:n_clusters
     turnover_mean(n,1) = prctile(turnover_map(corr_season_smooth == n),25);
@@ -435,7 +441,7 @@ turnover_mean
 
 
 %% get fraction of species shared between biomes
-species_biomes = ones(12,8,536).*NaN;
+species_biomes = NaN(12,8,536);
 for m = 1:12
     for n = 1:n_clusters
         tmp = corrected_monthly_ID(m,corr_corrected_monthly_smooth(m,:,:) == n);
@@ -448,7 +454,7 @@ for m = 1:12
 end
 
 %for each month get the number of species that is equal between two biomes
-matrix_shared_species = ones(12,n_clusters,n_clusters).*NaN;
+matrix_shared_species = NaN(12,n_clusters,n_clusters);
 for m = 1:12
     for i = 1:n_clusters
         for j = 1:n_clusters
@@ -462,7 +468,7 @@ mean_mat_shared = squeeze(median(matrix_shared_species,1,'omitnan'))
 %%
 
 
-% num_species_monthV3 = ones(12,8).*NaN;
+% num_species_monthV3 = NaN(12,8);
 % for m = 1:12
 %     for i = 1:n_clusters
 % 
@@ -516,7 +522,7 @@ yvalues(I)
 [r_hap,c_hap] = find(name_genus_phylum(:,3) == 'haptophyta')
 
 
-num_species_month_din = ones(12,8).*NaN;
+num_species_month_din = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         %get IDs from map
@@ -526,7 +532,7 @@ for m = 1:12
 end
 num_species_month_din(num_species_month_din == 0) = NaN;
 
-num_species_month_bac = ones(12,8).*NaN;
+num_species_month_bac = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         %get IDs from map
@@ -536,7 +542,7 @@ for m = 1:12
 end
 num_species_month_bac(num_species_month_bac == 0) = NaN;
 
-num_species_month_hap = ones(12,8).*NaN;
+num_species_month_hap = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         %get IDs from map
@@ -583,7 +589,7 @@ for i = 1:n_clusters
     mean(coverage(i,coverage(i,:)>0),'omitnan')
 end
 % get top 10 species for each biome
-top_10 = ones(n_clusters,10).*NaN;
+top_10 = NaN(n_clusters,10);
 for n = 1:n_clusters
     [B I] = sort(coverage(n,:),'descend');
     top_10(n,:) = I(1:10)
@@ -692,7 +698,7 @@ for n = 1:8
 ranks(:,n) = r'
 end
 
-ranks = ones(536,n_clusters).*NaN;
+ranks = NaN(536,n_clusters);
 for n = 1:n_clusters
     [B,tmp] = sort(coverage(n,:),'descend');
     [~,r]=sort(tmp)
@@ -788,7 +794,7 @@ tmp_satellite_species(tmp_satellite_species > 0) = 1;
 save('Sal_et_al_biovolume','Biovolume_names','Biovolume_values')
 
 
-Values_per_species = ones(length(name_genus_phylum),2).*NaN;
+Values_per_species = NaN(length(name_genus_phylum),2);
 for i = 1:length(name_genus_phylum)
     [r c] = find(Biovolume_names == name_genus_phylum{i,1})
     if(~isempty(r))
@@ -811,7 +817,7 @@ end
 [r_din c] = find(name_genus_phylum(:,3) == 'dinoflagellata')
 dino = name_genus_phylum(r_din,:); 
 dino_gen = unique(dino(:,2))
- dino_gen_num = ones(length(dino_gen),1).*NaN;
+ dino_gen_num = NaN(length(dino_gen),1);
 for i = 1:length(dino_gen)
     [r c] = find(dino(:,2) == dino_gen{i})
     dino_gen_num(i,1) = length(r)
@@ -820,7 +826,7 @@ end
 [r_hap c] = find(name_genus_phylum(:,3) == 'haptophyta')
 hapto = name_genus_phylum(r_hap,:); 
 hapto_gen = unique(hapto(:,2))
-  hapto_gen_num = ones(length(hapto_gen),1).*NaN;
+  hapto_gen_num = NaN(length(hapto_gen),1);
 
 for i = 1:length(hapto_gen)
     [r c] = find(hapto(:,2) == hapto_gen{i})
@@ -828,7 +834,7 @@ for i = 1:length(hapto_gen)
 end
 
 %get carbon and biovolume for each biome
-carbon_biovolume_all = ones(12,8,2).*NaN;
+carbon_biovolume_all = NaN(12,8,2);
 for m = 1:12
     for i = 1:n_clusters
         carbon_biovolume_all(m,i,1) = sum(num_species_monthV3(m,:,i)'.*Values_per_species(:,1),1,'omitnan');
@@ -837,7 +843,7 @@ for m = 1:12
 end
 carbon_biovolume_all(carbon_biovolume_all == 0) = NaN;
 
-carbon_biovolume_bac = ones(12,8,2).*NaN;
+carbon_biovolume_bac = NaN(12,8,2);
 for m = 1:12
     for i = 1:n_clusters
         carbon_biovolume_bac(m,i,1) = sum(num_species_monthV3(m,r_bac,i)'.*Values_per_species(r_bac,1),1,'omitnan');
@@ -846,7 +852,7 @@ for m = 1:12
 end
 carbon_biovolume_bac(carbon_biovolume_bac == 0) = NaN;
 
-carbon_biovolume_din = ones(12,8,2).*NaN;
+carbon_biovolume_din = NaN(12,8,2);
 for m = 1:12
     for i = 1:n_clusters
         carbon_biovolume_din(m,i,1) = sum(num_species_monthV3(m,r_din,i)'.*Values_per_species(r_din,1),1,'omitnan');
@@ -888,7 +894,7 @@ end
 % =========================================================================
 
 % find at which level one would find indicator species
-ind_species = ones(8,2).*NaN;
+ind_species = NaN(8,2);
 for i = 1:8
     tmp_ind = NaN;
     tmp_bio = NaN;
@@ -1075,7 +1081,7 @@ tmp_ref = ref_weights(:,ind_species');
 % correspondence part
 [metric_1,metric_2,metric_3,overlap_pairs1,overlap_pairs2]  = compare_overlapV2(ref_map,new_map,area_map,tmp_ref,removed_weights);
 
-overlap_maps = ones(12,180,360).*NaN;
+overlap_maps = NaN(12,180,360);
 for i = 1:length(overlap_pairs1)
     overlap_maps(smooth_map == overlap_pairs1(i,1) & smooth_map_indicator == overlap_pairs2(i,2)) = 1;
 end
@@ -1368,7 +1374,7 @@ end
 final_pairs
 %get for each pair the area coverage
 % Scores(2,18,72)
-mat_pair = ones(length(final_pairs),8).*NaN;
+mat_pair = NaN(length(final_pairs),8);
 sorted_all_biome_pairs
 months_found = NaN
 for i = 1:size(final_pairs,1)
@@ -1392,7 +1398,7 @@ months_found(1) = [];
 months_found = months_found'
 %coverage of species in biome
 
-mat_pair_area_sp1 = ones(length(final_pairs),8).*NaN;
+mat_pair_area_sp1 = NaN(length(final_pairs),8);
 mat_pair_area_sp2 = mat_pair_area_sp1;
 for i = 1:size(final_pairs,1)
 
@@ -1442,7 +1448,7 @@ end
 original_mat_pair = mat_pair;
 mat_pair = original_mat_pair;
 mat_pair(mat_pair==0) = NaN;
-mat_pair_tmp =mat_pair.*NaN;
+mat_pair_tmp = mat_pair.*NaN;
 
 for i = 1:8
     [rp, cp] = find(flag_significant(:,i) == 1);
@@ -1492,7 +1498,7 @@ name_genus_phylum(all_species_net,[3,1])
 % p.BackgroundColor = [0 0 0];
 for i = 1:8
     %for each biome i
-    matrix_schemaball = ones(length(all_species_net)).*NaN;
+    matrix_schemaball = NaN(length(all_species_net));
     for j = 1:size(mat_pair_tmp,1)
         if mat_pair_tmp(j,i) ~= 0
             [r1 c1] = find(all_species_net == final_pairs(j,1));
@@ -1561,7 +1567,7 @@ aa{1}
 
 %code stands for type of interaction
 % tmp_com = final_pairs(~isnan(final_pairs(:,1)),:);
-% coded_phyto = ones(size(No_nan_phyto_simple,1),length(tmp_com))*NaN;
+% coded_phyto = NaN(size(No_nan_phyto_simple,1),length(tmp_com))*NaN;
 % 
 % for i = 1:size(coded_phyto,1)
 %     for j = 1:size(coded_phyto,2)
@@ -1647,7 +1653,7 @@ tmp_ref = ref_weights(:,network_species);
 % correspondence part
 [metric_1,metric_2,metric_3,overlap_pairs1,overlap_pairs2]  = compare_overlapV2(ref_map,new_map,area_map,tmp_ref,removed_weights);
 
-overlap_maps = ones(12,180,360).*NaN;
+overlap_maps = NaN(12,180,360);
 for i = 1:length(overlap_pairs1)
     overlap_maps(smooth_map == overlap_pairs1(i,1) & smooth_map_network == overlap_pairs2(i,2)) = 1;
 end

@@ -19,7 +19,7 @@ Parameters:
     
     %get weights (area)
     months = size(original_map,1);
-    extended_area = ones(months,180,360).*NaN;
+    extended_area = NaN(months,180,360);
     for m=1:months
         extended_area(m,:,:) = area_map;
     end
@@ -34,7 +34,7 @@ Parameters:
 %     other_labels = unique(new_map(~isnan(new_map)));
 %     other_labels
 %     n1 = min(length(other_labels),n);
-    C_area = ones(n,n).*0;
+    C_area = zeros(n,n);
     
     for i=1:n
         for j=1:n
@@ -44,7 +44,7 @@ Parameters:
     Area_tot = sum(extended_area(~isnan(original_map)));
     C_area = C_area./Area_tot;
     
-    C = ones(n,n).*0;
+    C = zeros(n,n);
     for i=1:n
         for j=1:n
             C(i,j) = length(original_map(original_map == labels(i) & new_map == labels(j)));

@@ -22,7 +22,7 @@ Parameters:
     ind = find(classes == class); 
 
     [m, n] = size(weights);
-    rest_BMU = ones(m,n+1)*NaN;
+    rest_BMU = NaN(m,n+1);
 
     for i = 1:m
     %rest_BMU contains all weights and labels of neurons that are not BMU
@@ -33,7 +33,7 @@ Parameters:
     %delete BMU, so you only have the non-BMU 
     rest_BMU(ind,:) = [];      
 
-    sum_dist = ones( length(rest_BMU(:,end)),2 )*NaN;
+    sum_dist = NaN( length(rest_BMU(:,end)),2 );
     for i =1:length(rest_BMU(:,end))
         if(strcmp(dist_metric,'dist'))
             dist = new_data - rest_BMU(i,1:end-1);

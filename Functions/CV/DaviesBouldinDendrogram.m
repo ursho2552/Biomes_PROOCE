@@ -102,7 +102,7 @@ Parameters:
     end
  
 %% Extend results to include empty neurons
-T_all = ones(size(data,1),r2).*NaN;
+T_all = NaN(size(data,1),r2);
 c = 1;
 
 for i = 1:length(available_classes)
