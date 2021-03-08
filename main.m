@@ -912,7 +912,9 @@ end
 
 % =========================================================================
 % The analysis section is performed on the stand-alone analysis script
-% "Analysis.m".
+% "Analysis.m" and "AnalysisEnv.m"
 % =========================================================================
 
 Analysis
+
+AnalysisEnv
