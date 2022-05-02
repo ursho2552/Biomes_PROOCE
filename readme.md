@@ -1,7 +1,7 @@
 ## Biome partitioning of the global ocean based on phytoplankton biogeography
 
-This repository is a set of matlab functions used to partition the global open ocean based on the presence patterns of phytoplankton species.
-To this end, we train self-organizing maps and use a PCA-hierarchical agglomerative clustering approach.
+This repository is a set of matlab functions used to partition the global open ocean based on the presence patterns of 536 phytoplankton species.
+To this end, we use a SOM-PCA-HAC approach. First, we assess the similarity of observations using the presence/absence patterns in a self-organizing map (SOM). Second, we perform a dimensionality reduction of the 536 attributes (species) using a principal component analysis (PCA). Finally, we group the reduced data into clusters using hierarchical agglomerative clustering (HAC).
 
 The manuscript detailing the resulting biomes has been published in [Progress in Oceanography](https://doi.org/10.1016/j.pocean.2021.102530), and can be cited as:
 
