@@ -1,13 +1,23 @@
-function [sequence] = find_most_similar(D, Z,starter,maxclust, sequence)
-%Function finds the most similar neuron for the starter
+function [sequence] = find_most_similar(D, Z, starter, maxclust, sequence)
+%Function finds the most similar neuron given the label "starter"
 
-%get distance from starter to all other neurons
-% D = get_distance_from_weights(weights,starter);
-% %construct linkage matrix
-% Z = get_linkage_from_weights(weights,maxclust,starter);
+%{
+Parameters:
+    D (matrix): pairwise distance matrix between neurons 
+    Z (matrix): encoding of tree containing hierarchical clusters
+    starter (int): label of current neuron for which the similarity is
+    assessed
+    maxclust (int): Maximum number of clusters/neurons
+    sequence (vector): In descending order of similarity, this vector
+    stores the labels of the neurons that are most similar to starter. For
+    the first call of "find_most_similar()" it is the same as starter
+    
+ 
+ Output:
+    sequence (vectr): Vector containing the labels of the neurons in
+    descending order of similarity to the first label in the vector
 
-%read sequence from most similar to least similar according to the linkage
-%matrix
+%}
 
 
 %continue until sequence is large enough
@@ -16,9 +26,6 @@ function [sequence] = find_most_similar(D, Z,starter,maxclust, sequence)
 %find starter
 
     [r c] = find(Z(:,1:2) == starter);
-
-
-
 
     temp_solution = Z(r,:);
     temp_solution(1,c) = NaN;
@@ -53,8 +60,6 @@ function [sequence] = find_most_similar(D, Z,starter,maxclust, sequence)
 
             %check that no new clusters appear other than those listed in tmp_Z
 
-
-
             clust_seq(clust_seq > max(tmp_Z,[],'omitnan')) = [];
             clust_seq(clust_seq == temp_solution(1)) = [];
             clust_seq(ismember(clust_seq,tmp_Z)) = [];
@@ -70,12 +75,11 @@ function [sequence] = find_most_similar(D, Z,starter,maxclust, sequence)
             end
         end
 
-
-
-
         %check distances to determine sequence
         D_tmp = D(clust_seq,:);
-        D_tmp = sort(D_tmp,2,'ascend');
+        [B I] = sort(D_tmp(:,2),'descend');
+        D_tmp = D_tmp(I,:);
+        
         sequence = [sequence;D_tmp(:,1)];
         starter = temp_solution(2);
         if(starter <= maxclust)

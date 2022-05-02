@@ -5,7 +5,9 @@
 cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 load('EnvData.mat')
 
-%% Get surface values
+%% MLD average
+%need to calculate for nitrate, phosphate, salinity, silicate, and
+%temperature
 
 %calculate excess nitrate and excess phosphate
 Pstar = phosphate - nitrate./16;
@@ -27,11 +29,13 @@ chl_surf = permute(chl,[3,2,1]);
 pCO2_surf = permute(pCO2,[3,2,1]);
 wind_surf = permute(wind,[3,2,1]);
 
+
 phosphate = permute(phosphate, [3,4,2,1]);
 nitrate = permute(nitrate, [3,4,2,1]);
 
-[r100, c100] = find(phosphate_depth == 100);
-[r200, c200] = find(phosphate_depth == 200);
+
+[r100 c100] = find(phosphate_depth == 100);
+[r200 c200] = find(phosphate_depth == 200);
 P_deep = squeeze(mean(phosphate(c100(1)+1:c200(1),:,:,:),1,'omitnan'));
 N_deep = squeeze(mean(nitrate(c100(1)+1:c200(1),:,:,:),1,'omitnan'));
 P_surf = squeeze(mean(phosphate(1:c100(1),:,:,:),1,'omitnan'));
@@ -78,8 +82,8 @@ for i = 1:12
 end
 Complete_env(1,:) = [];
 
-%save the dataset
 cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
+
 if isfile('MonthlyEnv_Oct2019.mat')
     disp('File already exists!')
 else
@@ -92,13 +96,10 @@ cd(folder_main)
 
 %construct Dendrogram to see which environmental parameters to use
 t = 0.3;
-% labels_env = {'N_{mld}', 'N_{surf}', 'P_{mld}', 'P_{surf}', 'Si_{mld}',...
-%     'Si_{surf}', 'P*_{mld}', 'P*_{surf}', 'N*_{mld}', 'N*_{surf}', 'MLS',...
-%     'SSS', 'MLT', 'SST', 'MLD', 'log(NPP)', 'PAR', 'log(Chl)', 'pCO_{2}', 'Wind'}
+
 labels_surf = { 'N_{surf}', 'P_{surf}', 'Si_{surf}', 'P*_{surf}', 'N*_{surf}',...
-    'SSS','SST', 'MLD', 'log(NPP)', 'PAR', 'log(Chl)', 'pCO_{2}', 'Wind','\Delta P'};
-% labels_mld = { 'N_{mld}', 'P_{mld}', 'Si_{mld}', 'P*_{mld}', 'N*_{mld}',...
-%     'MLS','MLT', 'MLD', 'log(NPP)', 'PAR', 'log(Chl)', 'pCO_{2}', 'Wind'}
+    'SSS','SST', 'MLD', 'log(NPP)', 'PAR', 'log(Chl)', 'pCO_{2}', 'Wind','\Delta P'}
+
 
 %use only data within the 95%confidence interval of Complete_env
 
@@ -109,6 +110,7 @@ for i = 5:size(Complete95,2)
     Complete95(Complete95(:,i) > q97_5,:) = [];
     Complete95(Complete95(:,i) < q2_5,:) = [];
 end
+%normalize data to unit variance
 
 Normalized_env = Complete_env;
 for i = 5:size(Normalized_env,2)
@@ -119,5 +121,11 @@ for i = 5:size(Normalized_env,2)
     end
 end
 
-[ R_spearman_annual_env, orig_annual_env,T_annual_env] =...
-    get_dendrogram('spearman',Complete_env(:,5:end)',labels_surf,2:12,'weighted');
+Standardized_env = Complete_env;
+
+%only keep one, mld or surf
+Surf_env = Standardized_env;
+
+[ R_spearman_annual_env, orig_annual_env,T_annual_env, EVA1, EVA2, EVA3 ] =...
+    get_dendrogram('spearman',Surf_env(:,5:end)',labels_surf,2:12,1,'weighted');
+

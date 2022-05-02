@@ -29,7 +29,7 @@ Parameters:
     refvecmat = refvec(classes,:); 
                        
     if(strcmp(dist_metric,'dist'))
-        sub = data - refvecmat;
+        sub = data(:,5:end-1) - refvecmat;
 
         sub = sub.^2;
         sub = sqrt(sum(sub,2));
@@ -46,7 +46,7 @@ Parameters:
         qe = mean(qe);
     
     elseif(strcmp(dist_metric,'mandist'))
-        sub = abs(data - refvecmat);
+        sub = abs(data(:,5:end-1) - refvecmat);
         sub = sum(sub,2);
 
         sub = [sub,classes];
@@ -75,7 +75,7 @@ Parameters:
     bmu2 = NaN(size(data,1),1);%vector containing the second BMU
 
     for i = 1:size(data,1)
-        bmu2(i) = find_2_bmu( data(i,:),classes(i), refvec, 1:length(refvec),dist_metric);
+        bmu2(i) = find_2_bmu( data(i,5:end-1),classes(i), refvec, 1:length(refvec),dist_metric);
     end
 
 
@@ -108,4 +108,5 @@ Parameters:
  
  
 end
+
 

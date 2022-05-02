@@ -36,7 +36,7 @@ Parameters:
         end
     end
     %sort the mean area over the months, seasons,...
-    [~, I] = sort(mean(area_per_label,2,'omitnan'),'descend');
+    [~, I] = sort(mean(area_per_label,2,'omitnan'),'ascend');
     sequence_labels = sequence_labels(I);
 
     %get similarity matrix for each label
@@ -51,23 +51,28 @@ Parameters:
         D(~ismember(D(:,1),sequence_labels),2) = NaN;
         %
         weights(~ismember(D(:,1),sequence_labels),:) = NaN;
-
+        
         [B,I] = sort(D(:,2),'descend');
 
         Z = linkage(weights,'weighted','cityblock');
+        
         Z(isnan(Z(:,3)),:) = [];
         Z(:,3) = [(maxclust+1):(maxclust+size(Z,1))]';
+        
         [similarity_neurons] = find_most_similar(D, Z,neuron_label,maxclust, neuron_label);
         similarity_neurons(similarity_neurons < 1) = [];
         matrix_sequence(i,:) = similarity_neurons';
+
     end
     %matrix_sequence contains for each label in the first column, the most
     %similar labels in the next columns
-    %% Create patch map for each label
-    parfor k = 1:size(raw_map,1)
+    %% Create patch map for each label 
+    for k = 1:size(raw_map,1) %parfor
         for i = 1:size(matrix_sequence,1)
 
             [patch_map,r] = isolate_patch(raw_map(k,:,:),matrix_sequence(i,1),area_map,tot_area,fraction,conn);
+            
+            
             %r contains the IDs for the patches found for each neuron label,
             %reassing each of them until they are no longer found
             changed_map = raw_map(k,:,:);
@@ -79,8 +84,8 @@ Parameters:
                     changed_map(patch_map == r(j)) = matrix_sequence(i,m);
                     %calculate new patches
                     [tmp_patch_map,~] = isolate_patch(changed_map,matrix_sequence(i,m),area_map,tot_area,fraction,conn);
+                    
                     %get new patch ID
-
                     new_ID = unique(tmp_patch_map(patch_map == r(j)));
                     new_ID(isnan(new_ID)) = [];
 

@@ -37,7 +37,7 @@ Parameters:
 
 
     str1 = horzcat('Removed_SOM_frac_',int2str(fr));
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/FeatureLoss/SOMs/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/FeatureLoss/SOMs/')
     save(str1,'tmp_phyto','removed_classes','removed_net', 'r_rem')
     exit
     

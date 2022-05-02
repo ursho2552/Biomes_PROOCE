@@ -6,9 +6,7 @@
 
 % each species should have SST, N, P, Si, MLD, PAR, SSS, pCO2
 
-cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
-load('EnvData.mat')
-
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/EnvData.mat')
 
 nitrate_surf = permute(squeeze(nitrate(:,:,1,:)),[3,2,1]);
 phosphate_surf = permute(squeeze(phosphate(:,:,1,:)),[3,2,1]);
@@ -24,15 +22,11 @@ wind_surf = permute(wind,[3,2,1]);
 % Calculate niches for each species
 % =========================================================================
 
-cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
-load('Simple_sort_Data.mat')
 %initialize vectors for each species
-n_features = size(No_nan_phyto_simple,2)-5;
-n_clusters = 9;
-niches_modelled = ones(3,n_features,n_clusters).*NaN;
+niches_modelled = ones(3,536,9).*NaN;
 
 %get maps for each species and extract the values of environmental data
-for i = 1:n_features
+for i = 1:536
     spec_map = prepare2plotV2(No_nan_phyto_simple(:,[2 3 4 i+4]));
     %SST
     niches_modelled(1,i,1) = prctile(temperature_surf(spec_map == 1),25);
@@ -74,9 +68,7 @@ for i = 1:n_features
 end
 
 %%
-cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Networks/')
 load('Coded_values_SOM_11Oct2019_V3_species.mat', 'network_species')
-
 network_species = unique([final_pairs(:,[1,3]);final_pairs(:,[2,3])],'rows')
 [B,I] = sort(network_species(:,2),'ascend')
 
@@ -92,12 +84,29 @@ my_species = [network_species(:,2),niches_modelled(1,network_species(:,1),1)',ni
     niches_modelled(1,network_species(:,1),8)',niches_modelled(2,network_species(:,1),8)',niches_modelled(3,network_species(:,1),8)',...
     niches_modelled(1,network_species(:,1),9)',niches_modelled(2,network_species(:,1),9)',niches_modelled(3,network_species(:,1),9)'],
 
+
+% network_species = unique([final_pairs(:,[1,3]);final_pairs(:,[2,3])],'rows')
+% [B,I] = sort(network_species(:,2),'ascend')
+% 
+% network_species = network_species(I,:)
+% network_species = unique(network_species(:,1))
+% my_species2 = [network_species(:,1),niches_modelled(1,network_species(:,1),1)',niches_modelled(2,network_species(:,1),1)',niches_modelled(3,network_species(:,1),1)',...
+%     niches_modelled(1,network_species(:,1),2)',niches_modelled(2,network_species(:,1),2)',niches_modelled(3,network_species(:,1),2)',...
+%     niches_modelled(1,network_species(:,1),3)',niches_modelled(2,network_species(:,1),3)',niches_modelled(3,network_species(:,1),3)',...
+%     niches_modelled(1,network_species(:,1),4)',niches_modelled(2,network_species(:,1),4)',niches_modelled(3,network_species(:,1),4)',...
+%     niches_modelled(1,network_species(:,1),5)',niches_modelled(2,network_species(:,1),5)',niches_modelled(3,network_species(:,1),5)',...
+%     niches_modelled(1,network_species(:,1),6)',niches_modelled(2,network_species(:,1),6)',niches_modelled(3,network_species(:,1),6)',...
+%     niches_modelled(1,network_species(:,1),7)',niches_modelled(2,network_species(:,1),7)',niches_modelled(3,network_species(:,1),7)',...
+%     niches_modelled(1,network_species(:,1),8)',niches_modelled(2,network_species(:,1),8)',niches_modelled(3,network_species(:,1),8)',...
+%     niches_modelled(1,network_species(:,1),9)',niches_modelled(2,network_species(:,1),9)',niches_modelled(3,network_species(:,1),9)'],
 %%
 
 yvalues =  {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
-    '(7) PEU','(8) SMN'};
+    '(7) PEU','(8) SMN'}
 legend_names = {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
-    '(7) PEU','Median'};
+    '(7) PEU','Median'}
+
+
 
 f = figure;
 p = uipanel('Parent',f,'BorderType','none'); 
@@ -106,6 +115,7 @@ p.TitlePosition = 'centertop';
 p.FontSize = 12;
 p.FontWeight = 'bold';
 p.BackgroundColor = [1 1 1];
+
 
 %plot sst for all biomes
 data = my_species(:,2:4)
@@ -118,9 +128,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -128,8 +138,8 @@ for n = 1:length(data)
     
     xneg = abs(data(n,1)-data(n,2));
     xpos = abs(data(n,3)-data(n,2));
-    herr(my_species(n,1)) = errorbar(data(n,2),pos,0,0,xneg,xpos,'Color',comb_cmap(my_species(n,1),:));
-    hh(n) = plot(data(n,2),[pos],'k*');
+    herr(my_species(n,1)) = errorbar(data(n,2),pos,0,0,xneg,xpos,'Color',comb_cmap(my_species(n,1),:))
+    hh(n) = plot(data(n,2),[pos],'k*')
     
 end
 xlabel('SST')
@@ -151,9 +161,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -183,9 +193,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -217,9 +227,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -250,9 +260,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -284,9 +294,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -315,9 +325,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -347,9 +357,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -378,9 +388,9 @@ for n = 1:length(data)
     if(flag) %first one
         pos = my_species(n,1);
         flag = 0;
-    elseif(~flag && next_obs == first_obs)
+    elseif(~flag & next_obs == first_obs)
         pos = pos + 0.0125;
-    elseif(~flag && next_obs ~= first_obs)
+    elseif(~flag & next_obs ~= first_obs)
         pos = my_species(n,1);
         first_obs = next_obs;
     end
@@ -405,6 +415,7 @@ legend([herr(1:7),hh(1)],legend_names),
 % =========================================================================
 % Map co-occurrences
 % =========================================================================
+final_pairs
 
 
 for i = 1:8
@@ -422,8 +433,12 @@ for i = 1:8
     co_map(isnan(corr_smooth_annual_map)) = NaN;
     plotSOM(co_map,1,NaN)
     title(i)
+%     cmap = ametrine;
     colormap(comb_cmap);
     cc = colorbar;
+%     caxis([0 150]);
     
 end
+
+
 

@@ -15,10 +15,10 @@ Parameters:
 %}
 
     %load original data
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
     load('Simple_sort_Data.mat')
     
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/SpatialTemporalLoss/')
     load('Noisy_data_ind.mat')
     
     %Define optimal setup 
@@ -38,7 +38,7 @@ Parameters:
     str1 = horzcat('Leaky_SOM_frac_',int2str(fr));
     nn = fr;
     
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/SOMs/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/SpatialTemporalLoss/SOMs/')
     save(str1,'noisy_data','classes_noise','noise_net','nn','indeces')
     
     exit

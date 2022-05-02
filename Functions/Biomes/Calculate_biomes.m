@@ -1,18 +1,20 @@
-function [raw_map_monthly, new_weights] = Calculate_biomes(net, classes_orig, data, n_clusters,coeff)
+function [raw_map_monthly, new_weights,new_classes] = Calculate_biomes(net, classes_orig, data, n_clusters,coeff)
 %Function to construct biomes from the class labels, the number of biomes,
 %and the fraction of global ocean area that the smallest biomes can have
 
 
 %{
 Parameters:
-    data (matrix): Features of one observation
-    class (int): Class label of the observation
-    weights (matrix) : Weights of the trained neurons
-    classes (vector): Vector containing the class labels for each observations
-    dist_metric (str): Metric used to calculate distance between neurons
+    net (network): Trained SOM
+    classes_orig (vector): Class label of all observations
+    data (matrix) : Presence/absence data
+    n_clusters (int): Number of clusters to use
+    coeff (matrix): PCA transformation matrix
  
  Output:
-    bmu2 (float): label of second best matching unit
+    raw_map_monthly (matrix): clustered neurons
+    new_weights (matrix): values of average neurons after clustering
+    new_classes (vector): class label of all observations after clustering
 
 %}
 

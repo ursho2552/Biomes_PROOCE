@@ -15,9 +15,10 @@
 % correctly.
 % =========================================================================
 
+%% Restart workspace
 
 clear all
-folder_main = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach';
+folder_main = '/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE';
 addpath(genpath(folder_main))
 cd(folder_main)
 
@@ -26,26 +27,49 @@ cd(folder_main)
 % =========================================================================
 
 %load trained SOM
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/01NeuronsError/')
 load('Single_run_11.mat')
 
 %load help variables
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('HelpVariables.mat')
 load('Area_map.mat')
 
 %construct or load simplified version of raw data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('Simple_sort_Data.mat')
 load('Transformed_CompleteSuitePhyto.mat')
 load('Seasonally_corrected_data.mat')
 load('Names_species')
 
 %load biomes
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 load('No_mean_PCA_biomes_9_v2_5_perc.mat')
 load('No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
 load('No_mean_PCA_biomes_seasonal_9_v2_5_perc.mat')
+
+
+
+
+[ID_maps] = prepare2plot( [No_nan_phyto_simple(:,2:4),No_nan_phyto_simple(:,1)]);
+corrected_monthly_raw = NaN(12,180, 360);
+corrected_monthly_ID = corrected_monthly_raw;
+%shift Southern Hemisphere by 6 months
+for i =1:12
+    if(i<7)
+        j = mod(i+6,13);
+    else
+        j = mod(i+6,13) +1;
+    end
+    %i and j are the indices of thmatlab e months that need to be combined
+    corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);
+    corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); 
+    
+    corrected_monthly_ID(i,91:end,:) = ID_maps(i,91:end,:);
+    corrected_monthly_ID(i,1:90,:) = ID_maps(j,1:90,:);
+
+end
+
 
 
 %% Sort biomes by size
@@ -78,22 +102,24 @@ corr_smooth_annual_map = smooth_annual_map;
 corr_season_smooth = NaN(4,180,360);
 corr_corrected_monthly_smooth = NaN(12,180,360);
 corr_corrected_monthly_raw = NaN(12,180,360);
+corr_monthly_smooth = NaN(12,180,360);
 for i = 1:n_clusters
-    
+    corr_monthly_smooth(smooth_map == I(i)) = i;
     corr_smooth_annual_map(smooth_annual_map == I(i)) = i;
     corr_season_smooth(season_map_smooth == I(i)) = i;
     corr_corrected_monthly_smooth(corrected_monthly_smooth == I(i)) = i;
     corr_corrected_monthly_raw(corrected_monthly_raw == I(i)) = i;
 end
 
+
 %safe biomes with corrected labels
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 
 %save the dataset
 if isfile('Seasonally_corrected_original.mat')
     disp('File already exists!')
 else
-    save('Seasonally_corrected_original','corr_smooth_annual_map','corr_season_smooth','corr_corrected_monthly_smooth')
+    save('Seasonally_corrected_original','corr_smooth_annual_map','corr_season_smooth','corr_corrected_monthly_smooth','corr_monthly_smooth')
 end
 
 cd(folder_main)
@@ -168,7 +194,7 @@ for s = 1:4
     hold off
 end
 
-%% Table A.4 Annual and seasonal area
+%% Table Annual and seasonal area (not used in final version)
 
 % =========================================================================
 % Get area of annual and seasonal biomes; UHE 09/08/2019
@@ -191,7 +217,7 @@ end
 disp('Seasonal area coverage by biomes:')
 area_seasonal  = round(1000*area_seasonal)/10    
 
-%% Figure A.11 Plot differences between seasonal biome location and annual location
+%% Figure A.15 Plot differences between seasonal biome location and annual location
 
 
 diff_maps = NaN(4,180,360);
@@ -306,6 +332,7 @@ set(h,'LineWidth',3)
 n_clusters = 8;
 cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/')
 load('Single_run_11.mat')
+cd(folder_main)
 
 %NMDS for each month separately
 [ Y_dis1,stress1,disparities1,spread,convex_hull,biome_points ] =...
@@ -399,7 +426,7 @@ num_species_monthV3 = NaN(12,8);
 for m = 1:12
     for i = 1:n_clusters
         %get IDs from map
-        tmp = mean_richness_map(m,corr_corrected_monthly_smooth(m,:,:) == i)
+        tmp = mean_richness_map(m,corr_corrected_monthly_smooth(m,:,:) == i);
         num_species_monthV3(m,i) = sum(tmp>0)
     end
 end
@@ -657,7 +684,7 @@ yvalues =  {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
 [top_occ,I] = get_heatmaps(coverage, yvalues, n_clusters,name_genus_phylum);
 
 %save coverage for further analysis
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/IndicatorSpecies')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/IndicatorSpecies')
 if isfile('Coverage.mat')
     disp('File already exists!')
 else
@@ -673,18 +700,18 @@ cd(folder_main)
 name_genus_phylum(237,3) = "dictyochophyceae";
 name_genus_phylum(239,3) = "dictyochophyceae";
 
-%% Table A.15
+%% Table A.15 (not used in final version)
 
 %load data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/IndicatorSpecies')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/IndicatorSpecies')
 load('Coverage.mat')
 
 % correlation between barcodes of biomes
-R_species = corr(top_occ','Type','Spearman') 
+R_species = corr(top_occ','Type','Spearman') ;
 R_species(R_species == 1) = NaN;
 mean(R_species,2,'omitnan')
 
-%% Figure A.12
+%% Figure A.16
 % =========================================================================
 % Construct maps of coverage of species 1 179 358 and 536
 % =========================================================================
@@ -695,8 +722,8 @@ my_species = No_nan_phyto_simple(:,[2 3 4 I(1)+4 I(179)+4 I(358)+4 I(536)+4]);
 disp('The names of the species are:')
 my_names = name_genus_phylum([I(1) I(179) I(358) I(536)],1)
 
-for i = 4:539
-    my_map = prepare2plotV2(my_species(:,[1 2 3 i]));
+for i = 4:7
+    my_map = prepare2plot(my_species(:,[1 2 3 i]));
     my_map = sum(my_map,1,'omitnan');
     my_map(my_map == 0) = NaN;
     plotSOM(my_map,1,NaN)
@@ -758,7 +785,7 @@ plotSOM(my_map,1,NaN)
 % ranks(:,n) = r'
 % end
 %}
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/IndicatorSpecies')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/IndicatorSpecies')
 load('Coverage.mat')
 
 % Create table of top100 species for each biome
@@ -789,7 +816,7 @@ cd(folder_main)
 % =========================================================================
 
 %load species coverage data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/IndicatorSpecies')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/IndicatorSpecies')
 load('Coverage.mat')
 % get sorted list of species
 
@@ -893,10 +920,9 @@ for i = 1:8
     tmp_ind = NaN;
     tmp_bio = NaN;
     for m = 1:12
-%
+
         sum_core = sum(squeeze(core_species(m,:,:)),1,'omitnan');
         sum_core(sum_core > 1) = 0;
-%         [r_1 c_core] = find(sum_core ~= 0);
 
         sum_sat = sum(squeeze(satellite_species(m,:,:)),1,'omitnan');
 
@@ -1024,7 +1050,7 @@ Values_per_species(ind_species,:)
 % =========================================================================
 
 %load data needed
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 load('Seasonally_corrected_original')
 cd(folder_main)
 
@@ -1033,7 +1059,7 @@ tic
 Scores = monthly_Dunning(corr_corrected_monthly_smooth,Season_obs,n_clusters);
 toc
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Networks/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Networks/')
 if isfile('monthlyScores04Oct2019.mat')
     disp('File already exists!')
 else
@@ -1043,9 +1069,9 @@ end
 cd(folder_main)
 %% get monthly species pairs
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/IndicatorSpecies/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/IndicatorSpecies/')
 load('Coverage.mat')
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Networks/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Networks/')
 load('monthlyScores04Oct2019.mat')
 
 filter_Scores = Scores;
@@ -1092,7 +1118,7 @@ size(unique(network_species(:,1)))
 
 
 %save data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Networks/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Networks/')
 if isfile('Network_species_11Oct2019.mat')
     disp('File already exists!')
 else
@@ -1180,9 +1206,7 @@ for i = 1:n_clusters
 end
 h.NodeLabel = correspondence_labels(:,1);
 
-%% Get niches from model
-%plot distribution of the cooccurrences for each biome
-Niches_from_model
+
 
 
 %% Get tables
@@ -1401,25 +1425,15 @@ aa{1}
 
 coded_phyto = No_nan_phyto_simple(:,[1:4,unique(network_species(:,1))'+4,end]);
 
-%save data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Networks/')
-if isfile('Coded_values_21Aug2019_specV2.mat')
-    disp('File already exists!')
-else
-    save('Coded_values_21Aug2019_specV2','coded_phyto','-v7.3')
-end
-
 cd(folder_main)
 
-%% Train SOM with coded values 
+%% Train SOM with network species 
 
 % =========================================================================
 % Run the following snippet on a cluster not your local machine!
 % =========================================================================
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Networks/')
-load('Coded_values_21Aug2019_specV2')
-%load('Coded_values21Nov2018_min5_99.mat')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Networks/')
 tic
 d1 = 31;
 d2 = d1;
@@ -1428,7 +1442,7 @@ optimal_epoch = 200;
 toc
 
 %save data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Networks/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Networks/')
 if isfile('Coded_values_SOM_11Oct2019_V3_species.mat')
     disp('File already exists!')
 else
@@ -1436,6 +1450,9 @@ else
 end
 
 cd(folder_main)
+
+
+
 
 %% Construct network biomes
 
@@ -1469,7 +1486,7 @@ plotSOM(annual_map_smooth_netw,1,9)
 n_choice = 9
 %     load('CompleSuitePhyto.mat')
 %     load('Simple_sort_Data.mat')
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 load('No_mean_PCA_biomes_9_v2_5_perc.mat')
 cd(folder_main)
 
@@ -1500,24 +1517,14 @@ end
 
 
 
-%% Construct seasonal and annual biomes using indicator SOM and network SOM
-%compare the overlap using the respective neurons
-%compare the overlap only using the spatial extent
-
-
-
-
-% Compare_ind_net_to_original
-
-
-
-
-
 %% Environmental analysis
 
 % Use the respective scripts (Niches_from_model, Get_environmental_data,
 % and scripts in folder functions/Environmental
 
+%% Get niches from model
+%plot distribution of the cooccurrences for each biome
+Niches_from_model
 
 %% Additional analysis on carbon and  biovolume (Not used for manuscript)
 

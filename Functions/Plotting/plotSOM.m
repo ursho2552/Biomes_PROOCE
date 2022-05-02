@@ -17,7 +17,7 @@ Parameters:
 
 %}
 
-new_classes
+
 
 
 lons = -179.5:179.5;

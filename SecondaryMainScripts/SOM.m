@@ -9,7 +9,7 @@
 % =========================================================================
 
 %load dataset
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('Simple_sort_Data.mat')
 
 % =========================================================================
@@ -54,7 +54,7 @@ num_neurons = [num_neurons; num_neurons]';
 
 
 %load data needed
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('Transformed_CompleteSuitePhyto.mat')
 
 
@@ -72,8 +72,8 @@ for i = 1:size(num_neurons,1)
         [classes, net] = My_SOM( Transformed_phyto, d1,d2, 200,'mandist' );
         
         computing_time(i) = toc
-        cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError')
-        save(horzcat('Single_run',num2str(i)),'classes','net','i')
+        cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/01NeuronsError')
+        save(horzcat('Single_run_',num2str(i)),'classes','net','i')
         
         %calculate error
         tic
@@ -82,17 +82,16 @@ for i = 1:size(num_neurons,1)
         
         %store qe and te to later compare their fraction to the total error
         %save the error
-        save(horzcat('Single_run_error',num2str(i)),'total_error','qe','te','i','computing_time')
+        save(horzcat('Single_run_',num2str(i),'_error'),'total_error','qe','te','i','computing_time')
 
 end
-%save(horzcat('Single_run',num2str(i)),'total_error','qe','te','classes','net','i','computing_time')
 
 %% Plot error-metric as a function of number of neurons
 
 %merge single runs into a single one
 error_neurons = NaN(1,size(num_neurons,1));
 for i=1:size(num_neurons,1)
-    load(horzcat(file,'Single_run_',int2str(i),'_error.mat'));
+    load(horzcat('Single_run_',int2str(i),'_error.mat'));
     error_neurons(i) = total_error;
 end
 
@@ -142,8 +141,8 @@ for i = 1:size(epoch,2)
         [classes_ep, net_ep] = My_SOM( Transformed_phyto, d1,d2, epoch(i),'mandist' );   
         computing_time_ep(i) = toc
         %save each SOM run
-        cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/02EpochError')
-        save(horzcat('Single_run_ep',num2str(i)),'classes_ep','net_ep','i')
+        cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/02EpochError')
+        save(horzcat('Single_run_epoch_',num2str(i)),'classes_ep','net_ep','i')
         tic
         [ qe, te, total_error_ep ] = get_total_error( Transformed_phyto,classes_ep, net_ep,'mandist' ); 
         toc
@@ -151,7 +150,7 @@ for i = 1:size(epoch,2)
         
         %store qe and te to later compare their fraction to the total error
         %save the error
-        save(horzcat('Single_run_error_ep',num2str(i)),'total_error_ep','qe','te','i','computing_time_ep')
+        save(horzcat('Single_run_epoch_',num2str(i),'_error'),'total_error_ep','qe','te','i','computing_time_ep')
     
 end
 

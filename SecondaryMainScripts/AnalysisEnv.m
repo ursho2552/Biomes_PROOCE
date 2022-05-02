@@ -8,7 +8,7 @@
 % =========================================================================
 
 clear all
-folder_main = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach';
+folder_main = '/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE';
 addpath(genpath(folder_main))
 cd(folder_main)
 
@@ -17,23 +17,23 @@ cd(folder_main)
 % =========================================================================
 
 %load trained SOM
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/01NeuronsError/')
 load('Single_run_11.mat')
 
 %load help variables
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('HelpVariables.mat')
 load('Area_map.mat')
 
 %construct or load simplified version of raw data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('Simple_sort_Data.mat')
 load('Transformed_CompleteSuitePhyto.mat')
 load('Seasonally_corrected_data.mat')
 load('Names_species')
 
 %load biomes
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 load('No_mean_PCA_biomes_9_v2_5_perc.mat')
 load('No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
 load('No_mean_PCA_biomes_seasonal_9_v2_5_perc.mat')
@@ -52,7 +52,7 @@ EnvMulticomparison
 
 %% Get best combination of env variables
 
-GetEnvCombinations
+GetEnvCombination
 
 %% Koeppen analysis
 

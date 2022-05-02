@@ -1,8 +1,7 @@
 %% Do analysis of differences on monthly scale
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Environment/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 load('Simple_sort_Env_Data.mat')
 
-%transform to a (13x12x180x360) map (first 12 is the month
 
 map_env = ones(13,12,180,360).*NaN;
 
@@ -36,7 +35,6 @@ n_clusters = 8;
 mat = ones(12,12,n_clusters+2,n_clusters+2).*NaN;
 f = figure;
 p = uipanel('Parent',f,'BorderType','none'); 
-%p.Title = 'Kruskal-Wallis Test'; 
 p.TitlePosition = 'centertop'; 
 p.FontSize = 12;
 p.FontWeight = 'bold';
@@ -76,7 +74,6 @@ end
 %mat is 0 for combinations that are significantly different from each other
 %at p <= 1%, 1 for combinations that are not significantly different from
 %each other, and NaN for non-existent comparisons
-
 %%        
        
 size(mat)
@@ -92,8 +89,6 @@ for i =1:size(combined_mat,2)
 end
 
 
-
-
 for k = 2:2:size(combined_mat,1)
     for i = 1:size(combined_mat,2)
         for j = i+1:size(combined_mat,2)
@@ -104,11 +99,9 @@ end
 size(combined_mat)
 %%
 let_plot1 = {'(a)','(b)','(c)','(d)','(e)','(f)'};
-%let_plot2 = {'(e)','(f)','(g)','(h)'};
 let_plot= let_plot1
 f = figure;
 p = uipanel('Parent',f,'BorderType','none'); 
-%p.Title = 'Kruskal-Wallis Test'; 
 p.TitlePosition = 'centertop'; 
 p.FontSize = 12;
 p.FontWeight = 'bold';
@@ -134,19 +127,16 @@ for i = 1:2:size(combined_mat,1)
             end
         end
     end
-       
+
     
     xticks([1.5:1:10.5])
     yticks([1.5:1:10.5])
-%     xticklabels({'TB','PSP','PB','PE','MB','NSPE'})
     xticklabels( {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
     '(7) PEU', '(8) SMN'})
     xtickangle(90)
-%     yticklabels({'TB','PSP','PB','PE','MB','NSPE'})
     yticklabels( {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
     '(7) PEU', '(8) SMN'})
     colormap([[1 0 0];[1 1 1];[0 0 0]]);
-    %colormap([parula(12);[0 0 0]]);
     set(gca,'Ydir','reverse')
     descr1 = env_labels(i);
     if(i < 13)
@@ -155,7 +145,6 @@ for i = 1:2:size(combined_mat,1)
         descr2 = '';
     end
     
-%     set(findall(gcf,'-property','FontSize'),'FontSize',16)
     set(findall(gcf,'-property','LineWidth'),'LineWidth',2)
     
     set(gca, 'XAxisLocation', 'top')
@@ -163,7 +152,6 @@ for i = 1:2:size(combined_mat,1)
     h = text(4,10,descr2,'FontSize',25)
     text(-0.5,0,let_plot(j),'FontSize',25)
     j = j+1;
-    %set(h,'Rotation',90);
     axis square
     alpha(.5)
 
@@ -185,7 +173,6 @@ env_labels{I}
 % Find out on which months the differentiation is not significant
 % =========================================================================
 
-
 size(mat) %second 12 is months
 sum_mat = squeeze(sum(mat,2,'omitnan'));
 size(sum_mat)
@@ -199,8 +186,6 @@ for i =1:size(combined_mat,2)
 end
 
 
-
-
 for k = 2:2:size(combined_mat,1)
     for i = 1:size(combined_mat,2)
         for j = i+1:size(combined_mat,2)
@@ -209,7 +194,6 @@ for k = 2:2:size(combined_mat,1)
     end
 end
 size(combined_mat)
-
 
 
 %%
@@ -222,8 +206,6 @@ for mm = 1:12
     end
 
 
-
-
     for k = 2:2:size(combined_mat,1)
         for i = 1:size(combined_mat,2)
             for j = i+1:size(combined_mat,2)
@@ -232,11 +214,9 @@ for mm = 1:12
         end
     end
     let_plot1 = {'(a)','(b)','(c)','(d)','(e)','(f)'};
-    %let_plot2 = {'(e)','(f)','(g)','(h)'};
     let_plot= let_plot1
     f = figure;
     p = uipanel('Parent',f,'BorderType','none'); 
-    %p.Title = 'Kruskal-Wallis Test'; 
     p.TitlePosition = 'centertop'; 
     p.FontSize = 12;
     p.FontWeight = 'bold';
@@ -247,7 +227,6 @@ for mm = 1:12
 
     for i = 1:2:size(combined_mat,1)
         subplot(3,2,j,'Parent',p)
-    %figure
         tmp_mat = combined_mat;
         tmp_mat(combined_mat > 3 & combined_mat ~= 13) = 0; %for not significantly differente
         tmp_mat(combined_mat <= 3) = 1; %for significantly different
@@ -262,26 +241,15 @@ for mm = 1:12
             end
         end
 
-        %get sum of values in each upper and lower triangle
-
-%         for ii1 = 1:length(all_comb)
-%             upper(i) = upper(i) + sum_mat(i,all_comb(ii1,1)+1, all_comb(ii1,2)+1);
-%             lower(i) = lower(i) + sum_mat(i,all_comb(ii1,2)+1, all_comb(ii1,1)+1);
-%         end
-
-
 
         xticks([1.5:1:10.5])
         yticks([1.5:1:10.5])
-    %     xticklabels({'TB','PSP','PB','PE','MB','NSPE'})
         xticklabels( {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
         '(7) PEU', '(8) SMN'})
         xtickangle(90)
-    %     yticklabels({'TB','PSP','PB','PE','MB','NSPE'})
         yticklabels( {'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
         '(7) PEU', '(8) SMN'})
         colormap([[1 0 0];[1 1 1];[0 0 0]]);
-        %colormap([parula(12);[0 0 0]]);
         set(gca,'Ydir','reverse')
         descr1 = env_labels(i);
         if(i < 13)
@@ -290,7 +258,6 @@ for mm = 1:12
             descr2 = '';
         end
 
-    %     set(findall(gcf,'-property','FontSize'),'FontSize',16)
         set(findall(gcf,'-property','LineWidth'),'LineWidth',2)
 
         set(gca, 'XAxisLocation', 'top')
@@ -298,10 +265,8 @@ for mm = 1:12
         h = text(4,10,descr2,'FontSize',25)
         text(-0.5,0,let_plot(j),'FontSize',25)
         j = j+1;
-        %set(h,'Rotation',90);
         axis square
         alpha(.5)
-        %jj = input('dfd')
     end
 end
 

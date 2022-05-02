@@ -16,7 +16,7 @@
 %results, then take the combination with the most overlap
 
 %%
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Environment/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 load('MonthlyEnv.mat')
 Standardized_env = Complete_env;
 Surf_env = Standardized_env(:,[1 2 3 4 6 8 10 12 14 16 18 19 20 21 22 23 24]);

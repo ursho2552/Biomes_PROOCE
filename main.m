@@ -1,7 +1,7 @@
 %% Setup folder
 clear all;
 
-folder_main = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach';
+folder_main = '/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/';
 addpath(genpath(folder_main))
 
 cd(folder_main)
@@ -19,14 +19,14 @@ cd(folder_main)
 
 names = {'Jan_GAM','Feb_GAM','Mar_GAM','Apr_GAM','May_GAM','Jun_GAM','Jul_GAM',...
     'Aug_GAM','Sep_GAM','Oct_GAM','Nov_GAM','Dec_GAM'};
-dir = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/';
+dir = '/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/';
 for i=1:12
     %define the name of the file
     str = horzcat('dfs_month_',int2str(i),'_trsp_gam_pa_gridded_gr_bg(sit_ove).csv');
     %define variable name
     varname = genvarname(names(i));
     %read data, importfile1() was created by matlab
-    data_read = importfile1(str);
+    data_read = importfile(str);
     %assign data to varname
     eval([varname{i} '=data_read;'])
     %save file to the directory, change if not the same as the data
@@ -39,24 +39,24 @@ end
 % itself, either use python or with a matlab script, or manually
 % =========================================================================
 
-labels_phyto = importfile2('dfs_month_1_trsp_gam_pa_gridded_gr_bg(sit_ove).csv');
+labels_phyto = read_header('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/dfs_month_1_trsp_gam_pa_gridded_gr_bg(sit_ove).csv');
 
 % =========================================================================
 % load data saved above
 % =========================================================================
 
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Jan_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Feb_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Mar_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Apr_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/May_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Jun_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Jul_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Aug_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Sep_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Oct_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Nov_GAM.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/GAM/Dec_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Jan_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Feb_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Mar_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Apr_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/May_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Jun_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Jul_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Aug_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Sep_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Oct_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Nov_GAM.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/GAM/Dec_GAM.mat')
 
 % =========================================================================
 % Remove header/column descriptor. Check prior to deleting!
@@ -132,10 +132,13 @@ No_nan_phyto = [All_phyto(:,[1 3 4]),All_phyto(:,2),...
 % =========================================================================
 
 %got to data folder
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities')
-%save file
-% save('CompleSuitePhyto','No_nan_phyto','labels_phyto')
-%return to working folder
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
+if isfile('CompleSuitePhyto.mat')
+    disp('File already exists!')
+else
+    save('CompleSuitePhyto','No_nan_phyto','labels_phyto')
+end
+
 cd(folder_main)
 
 
@@ -148,7 +151,7 @@ cd(folder_main)
 % =========================================================================
 
 %load the data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('CompleSuitePhyto.mat')
 %allocate new matrix
 Transformed_phyto = No_nan_phyto;
@@ -203,7 +206,7 @@ end
 % Save LatLon and lons, lats for possible use later
 % =========================================================================
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 if isfile('HelpVariables.mat')
     disp('File already exists!')
 else
@@ -226,7 +229,7 @@ for i = 1:length(LatLon)
     end
 end
 %save the dataset
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities')
 if isfile('Simple_sort_Data.mat')
     disp('File already exists!')
 else
@@ -242,7 +245,7 @@ cd(folder_main)
 % =========================================================================
 
 %load data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities')
 load('Transformed_CompleteSuitePhyto.mat')
 
 %read in table with the following information: Species name|Species group 
@@ -285,7 +288,7 @@ cd(folder_main)
 % =========================================================================
 
 %load data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities')
 load('Names_species.mat');
 
 %get unique phyla modeled, and print it
@@ -312,7 +315,8 @@ cd(folder_main)
 % Running SOM as is will take a very long time. Thus, we instead use the
 % bash script "Euler_run_SOM.sh" to run every choice in parallel (Note that
 % some of the parameters in "Euler_run_SOM.sh" need to be changed prior to
-% runing the script
+% runing the script. The script is located under: 
+% /net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Functions/SOM
 % =========================================================================
 
 SOM
@@ -324,7 +328,7 @@ SOM
 % Plot the total error as a function of increasing number of neurons
 % =========================================================================
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/01NeuronsError')
 str1 = 'Single_run_';
 str2 = '_error.mat';
 nn = 15;
@@ -382,19 +386,14 @@ hold off;
 % =========================================================================
 % Plot the total error as a function of increasing number of epochs
 % =========================================================================
-
-str1 = 'Single_run_epoch';
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/02EpochError')
+str1 = 'Single_run_epoch_';
 str2 = '_error.mat';
 nn = 11;
 error_neurons_ep = NaN(1,nn)*NaN;
 for i = 1:nn
-    if(i <= 8)
-    
-        load(horzcat(str1,int2str(i),str2),'total_error_ep')
-    else
-        load(horzcat(str1,'_',int2str(i),'.mat'),'total_error_ep')
-        
-    end
+
+    load(horzcat(str1,int2str(i),str2),'total_error_ep')
     error_neurons_ep(i) = total_error_ep;
    
 end
@@ -425,8 +424,8 @@ hold off;
 % =========================================================================
 
 % =========================================================================
-% The first step is to create the CV folds. For this we use the stnad-alone
-% script "Create_CV_folds
+% The first step is to create the CV folds. For this we use the stand-alone
+% script "Create_CV_folds"
 % =========================================================================
 
 CreateCVfolds
@@ -439,7 +438,7 @@ CreateCVfolds
 % =========================================================================
 % =========================================================================
 % =========================================================================
-% ===== CALLING THE SCRIPT "Euler_run_CV.sh"IS DONE MANUALLY !!!! =========
+% ===== CALLING THE SCRIPT "Euler_run_CV.sh" IS DONE MANUALLY !!!! ========
 % =========================================================================
 % =========================================================================
 % =========================================================================
@@ -470,11 +469,11 @@ cd(folder_main)
 % =========================================================================
 
 %load data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/01NeuronsError/')
 load('Single_run_11.mat')
 
 %load help variables
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('HelpVariables.mat')
 
 if isfile('Area_map.mat')
@@ -545,7 +544,7 @@ min(coeff,[],1)
 % REVIEW 23/11/2020 loadings END
 % =========================================================================
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/PotentialBiomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/PotentialBiomes/')
 %calculate from 2 to 20 biomes
 n_clusters = [2:20];
 %define how small biomes should be, 0.1% of the global ocean area up to 10%
@@ -625,12 +624,14 @@ hold on
 plot(fracs(1:20),frac_change(1:20))
 grid on
 
-
-%upper threshold at 2%, but 0.5% and 1.8% as critical changing points,
-%using function findchangepts with 2 MaxNumChanges, since 1 does not find a
-%changing point!!! --> lower likely better, since less added error
+% =========================================================================
+% upper threshold at 2%, but 0.5% and 1.8% as critical changing points,
+% using function findchangepts with 2 MaxNumChanges, since 1 does not find 
+% a changing point!!! --> lower likely better, since less added error
+% =========================================================================
 
 cd(folder_main)
+
 %% Producing biomes
 
 % =========================================================================
@@ -639,13 +640,17 @@ cd(folder_main)
 % biome, and cluster centroids are weighted by the occurrence frequency of
 % each cluster member.
 % =========================================================================
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/PotentialBiomes/')
+
+
+
+
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/PotentialBiomes/')
 
 load('No_mean_PCA_biomes_9_v2_5_perc.mat')
 [smooth_annual_map, annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,0,4);
 [uncertainty_smooth_annual_map, uncertainty_annual_map] = aggregate_months(smooth_map,new_weights,area_map,No_nan_phyto_simple,0.5,1,4);
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 
 save('No_mean_PCA_biomes_annual_9_v2_5_perc','smooth_annual_map','annual_map',...
     'uncertainty_smooth_annual_map','uncertainty_annual_map')
@@ -653,28 +658,27 @@ save('No_mean_PCA_biomes_annual_9_v2_5_perc','smooth_annual_map','annual_map',..
 %plot the annual biome to see the structure
 plotSOM(smooth_annual_map,1,9)
 
-
 cd(folder_main)
 
-%% Testing the robustness of our biomes
+%% Testing the robustness of our biomes 
 
 % =========================================================================
 % In this section we test the sensitivity of our optimal SOM to information
-% loss. First, we test the sensitivity of our the SOM is to loss of 
+% loss. First, we test the sensitivity of our SOM to loss of 
 % spatial/temporal information (individual pixels). Second, we test the 
 % sensitivity of our SOM to loss of features (species across the dataset).
 % =========================================================================
 
 %load helper variables
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('HelpVariables.mat')
 
 %load simple sort data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('Simple_sort_Data.mat')
 
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/SpatialTemporalLoss/')
 %create matrix indicating which obsrvations should be deleted
 noisy_data_ind = No_nan_phyto_simple(:,1:30).*NaN;
 nsamples = size(noisy_data_ind,1);
@@ -690,9 +694,12 @@ if isfile('Noisy_data_ind.mat')
 else
     save('Noisy_data_ind','noisy_data_ind')
 end
+
 % =========================================================================
 % Now we again run a bash script "Euler_run_Robustness.sh to train 10
-% different SOMs. This again has to be done manually!!!!
+% different SOMs. This again has to be done manually!
+% The script is found under:
+% /net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Functions/Robustness
 % =========================================================================
 
 % =========================================================================
@@ -707,13 +714,13 @@ end
 % =========================================================================
 
 %load area map
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('Area_map.mat')
 
 fr = [1 5 10 20 30];
 for i =1:5
     %load network
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/SOMs/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/SpatialTemporalLoss/SOMs/')
     str1 = horzcat('Leaky_SOM_frac_',int2str(fr(i)))
     load(horzcat(str1,'.mat'))
 
@@ -725,7 +732,7 @@ for i =1:5
   
     tic
     original_weights = noise_net.IW{1};
-    %original_weights = bsxfun(@minus,original_weights,mean(original_weights));
+
     [~,~,latent,~,~] = pca(original_weights);
 
     [r,~] = find(latent > 1);
@@ -733,14 +740,14 @@ for i =1:5
     [coeff,~,~,~,~] = pca(original_weights,'NumComponents',r(end));
     toc 
   
-    [raw_monthly_maps, new_weights,~,~] = Calculate_biomes(noise_net, classes_noise_all,...
+    [raw_monthly_maps, new_weights,~] = Calculate_biomes(noise_net, classes_noise_all,...
         No_nan_phyto_simple, n_clusters,coeff);
     n = n_clusters;
 
     [smooth_map] = Clean_up_biomes( raw_monthly_maps,new_weights,...
     area_map,0.5,4,0);
 
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/Biomes/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/SpatialTemporalLoss/Biomes/')
     save(horzcat('Leaky_biomes_',int2str(n_clusters),'_fr_',int2str(fr(i)),'_5_perc'),...
     'raw_monthly_maps','new_weights','smooth_map','n','classes_noise_all')
       
@@ -753,7 +760,7 @@ end
 fr = [1 5 10 20 30];
 for i =length(fr):-1:1
     %load network
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/FeatureLoss/SOMs/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/FeatureLoss/SOMs/')
     str1 = horzcat('Removed_SOM_frac_',int2str(fr(i)));
     load(horzcat(str1,'.mat'))
     
@@ -768,28 +775,20 @@ for i =length(fr):-1:1
     [coeff,~,~,~,~] = pca(original_weights,'NumComponents',r(end));
     toc
     
-    [raw_monthly_maps, new_weights,~,~] = Calculate_biomes(removed_net, removed_classes,...
+    [raw_monthly_maps, new_weights,~] = Calculate_biomes(removed_net, removed_classes,...
         tmp_phyto, n_clusters,coeff);
     n = n_clusters;
 
     [smooth_map] = Clean_up_biomes( raw_monthly_maps,new_weights,...
     area_map,0.5,4,0);
 
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/FeatureLoss/Biomes/')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/FeatureLoss/Biomes/')
     save(horzcat('Removed_biomes_',int2str(n_clusters),'_',int2str(fr(i)),'_5_perc'),...
     'raw_monthly_maps','new_weights','smooth_map','n','tmp_phyto')
     
 end
 
-
-% =========================================================================
-% Validation test yields 9 clusters, robustness shows around nine clusters,
-% the change caused by adding more is not "significant", despite the area
-% coverage being lower than for lower clusterings (we want the one that is
-% stable), Testing for fraction to decide on smallest biome size is 0.5% as
-% seen in the plot, on the lower tail, the changing point is at 0.5 and 1.8
-% and we want to maintain most of the structures, thus 0.5% is our choice.
-% =========================================================================
+cd(folder_main)
 
 %% Compare the robustness of biomes (Table 2)
 
@@ -803,6 +802,7 @@ end
 
 CalculateRobustness
 
+cd(folder_main)
 
 %% Calculate seasonal biomes
 
@@ -812,7 +812,7 @@ CalculateRobustness
 % =========================================================================
 
 %load monthly and annual biomes
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 load('No_mean_PCA_biomes_9_v2_5_perc.mat')
 load('No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
 
@@ -829,7 +829,7 @@ load('No_mean_PCA_biomes_annual_9_v2_5_perc.mat')
 %Create a map of the observation IDs, i.e. the rows
 
 %load data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('Simple_sort_Data.mat')
 
 [ID_maps] = prepare2plot( [No_nan_phyto_simple(:,2:4),No_nan_phyto_simple(:,1)]);
@@ -843,7 +843,7 @@ for i =1:12
         j = mod(i+6,13) +1;
     end
     %i and j are the indices of thmatlab e months that need to be combined
-    corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:)
+    corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);
     corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); 
     
     corrected_monthly_ID(i,91:end,:) = ID_maps(i,91:end,:);
@@ -858,6 +858,9 @@ end
 % =========================================================================
 
 %Smooth the new seasonally corrected monthly biomes
+[monthly_smooth] = Clean_up_biomes( raw_monthly_maps,new_weights,...
+area_map,0.5,4,0);
+
 [corrected_monthly_smooth] = Clean_up_biomes( corrected_monthly_raw,new_weights,...
 area_map,0.5,4,0);
 
@@ -866,7 +869,7 @@ tic
 [Season_No_nan_phyto_simple] = reverse_prepare2plot(corrected_monthly_ID);
 toc
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 if isfile('Seasonally_corrected_data.mat')
     disp('File already exists!')
 else
@@ -899,7 +902,7 @@ for s = 1:4
 end
  
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 if isfile('No_mean_PCA_biomes_seasonal_9_v2_5_perc.mat')
     disp('File already exists!')
 else
@@ -907,6 +910,7 @@ else
         'uncertainty_smooth_seasonal_map','uncertainty_season_map','Season_obs','corrected_monthly_smooth')
 end
 
+cd(folder_main)
 
 %% Analysis
 
@@ -916,5 +920,6 @@ end
 % =========================================================================
 
 Analysis
+
 
 AnalysisEnv

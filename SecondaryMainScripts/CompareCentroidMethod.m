@@ -1,15 +1,21 @@
 %% Test error depending on definition of centroids
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01NeuronsError/')
+%==========================================================================
+% In this script we test different approaches to calculate the value that
+% is most representative for each cluster
+%==========================================================================
+
+
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/01NeuronsError/')
 load('Single_run_11.mat')
 
 %load help variables
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
-load('HelpVariable.mat')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
+load('HelpVariables.mat')
 load('Area_map.mat')
 
 %Load simple sort data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/')
 load('Simple_sort_Data.mat')
 
 %%
@@ -27,32 +33,36 @@ clearvars latent
 [coeff,score,~,~,explained] = pca(original_weights,'NumComponents',r(end));
 toc
 
-% cd('Explained_threshold')
+
 
 %calculate all, from 2 to 20 biomes
 n_clusters = [2:20];
 difference_freq = n_clusters.*NaN;
-difference_single = difference_freq;
 for i = 1:length(n_clusters)
 
-    [raw_monthly_maps, new_weights_freq,new_weights_single,new_classes] = Calculate_biomesV2(net, classes,...
+    [raw_monthly_maps, new_weights_freq,new_classes] = Calculate_biomes(net, classes,...
         No_nan_phyto_simple, n_clusters(i),coeff);
   
     
     obs_freq = No_nan_phyto_simple(:,5:end-1) - new_weights_freq(new_classes(:,3),:);
-    obs_single = No_nan_phyto_simple(:,5:end-1) - new_weights_single(new_classes(:,3),:);
     
     difference_freq(i) = mean(mean(abs(obs_freq),1,'omitnan'),'omitnan');
-    difference_single(i) = mean(mean(abs(obs_single),1,'omitnan'),'omitnan');
     
 
 end
 
 %save data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/04CentroidDefinition')
-save('Centroid_metrics','difference_freq','difference_single')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/04CentroidDefinition')
 
-cd(folder5)
+if isfile('Centroid_metrics.mat')
+    disp('File already exists!')
+else
+    save('Centroid_metrics','difference_freq')
+end
+
+
+
+cd(folder_main)
 figure
 hold on
 plot(n_clusters,difference_freq)
@@ -61,7 +71,7 @@ grid on
 xlabel('Number of clusters')
 ylabel('Mean difference between observation and centroid') 
 
-legend('Frequency weighted','unweighted')
+legend('Frequency weighted','Unique weighted')
 
 
 

@@ -1,4 +1,4 @@
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Environment/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 load('Simple_sort_Env_Data.mat')
 
 %transform to a (13x12x180x360) map (first 13 is the variable
@@ -11,7 +11,7 @@ map_env = ones(14,12,180,360).*NaN;
 % =========================================================================
 %match values in Surf_env_simple to No_nan_phyto_simple
 %save the dataset
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Environment/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 if isfile('Surf_env_simple_with_ID_Oct2019.mat')
     load('Surf_env_simple_with_ID_Oct2019.mat')
 else
@@ -138,7 +138,7 @@ legend([h1(available_labels), h2(1)],tmp);
 
 %% Alternative without NMDS just using SST and pCO2
 % load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/15Environment/Simple_sort_Env_Data.mat')
-load('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/15Environment/Simple_sort_Env_Data_Oct2019.mat')
+load('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/15Environment/Simple_sort_Env_Data_Oct2019.mat')
 
 %transform to a (13x12x180x360) map (first 13 is the variable
 

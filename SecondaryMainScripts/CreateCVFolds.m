@@ -1,12 +1,13 @@
 %% Create 10 partitionings for all leave out ratios
 
 % =========================================================================
-% This script divides the data into folds for the cross validation test.
+% This script divides the data into folds for the cross validation test. We
+% use a seed for reproducibility
 % =========================================================================
 
 
 %load data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities')
 load('Simple_sort_Data.mat')
 
 
@@ -70,7 +71,7 @@ for f = 1:4
 
 
     end
-    cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/03CrossValidation/Folds')
+    cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/03CrossValidation/Folds')
     save(horzcat('Data_partitioning_cross_validation_fr_',int2str(fr),'_Seed_',int2str(seed)),'idxtrain');
 end
 

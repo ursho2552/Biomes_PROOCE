@@ -1,6 +1,6 @@
 %% Get maps for each environmental variable
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Environment/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 load('MonhtlyEnv_Oct2019.mat')
 
 Surf_env = Complete_env;
@@ -10,7 +10,7 @@ labels_surf = { 'N_{surf}', 'P_{surf}', 'Si_{surf}', 'P*_{surf}', 'N*_{surf}',..
 %create simple sort environmental data
 
 %load help variables
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('HelpVariables.mat')
 %construct or load simplified version of raw data
 
@@ -24,7 +24,7 @@ for i = 1:length(LatLon)
 end
 
 %save the dataset
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Environment/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 if isfile('Simple_sort_Env_Data_Oct2019.mat')
     disp('File already exists!')
 else
@@ -152,7 +152,7 @@ end
 
 %%  
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/07Analysis/Environment/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/07Analysis/Environment/')
 load('Simple_sort_Env_Data.mat')
 
 

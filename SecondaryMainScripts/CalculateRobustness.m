@@ -7,13 +7,14 @@
 % =========================================================================
 
 %load area map
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('Area_map.mat')
 
 %get monthly biomes with full data
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/PotentialBiomes/')
 load('No_mean_PCA_biomes_9_v2_5_perc.mat')
 
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 if isfile('Seasonally_corrected_monthly_biomes.mat')
     load('Seasonally_corrected_monthly_biomes.mat')
 else
@@ -25,7 +26,7 @@ else
         else
             j = mod(i+6,13) +1;
         end
-        %i and j are the indices of thmatlab e months that need to be combined
+        %i and j are the indices of the months that need to be combined
         corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);
         corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); 
     end
@@ -37,10 +38,9 @@ else
     save('Seasonally_corrected_monthly_biomes','corrected_monthly_smooth')
 end
 
-
 %Construct seasonally corrected biomes for spatial/temporal loss and
 %feature loss
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/SpatialTemporalLoss/Biomes/')
 fr = [1, 5, 10, 20, 30];
 for ii = 1:length(fr)
     
@@ -58,7 +58,7 @@ for ii = 1:length(fr)
     end
 
     %get smooth version
-    [Lcorrected_monthly_smooth] = Clean_up_biomesV3( corrected_monthly_raw,new_weights,...
+    [Lcorrected_monthly_smooth] = Clean_up_biomes( corrected_monthly_raw,new_weights,...
     area_map,0.5,4,0);
     save(horzcat('Leaky_corrected_month_fr_',int2str(fr(ii))),'Lcorrected_monthly_smooth')
 end
@@ -66,7 +66,7 @@ end
     
 %Now for feature loss expriments
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/FeatureLoss/Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/FeatureLoss/Biomes/')
 fr = [1, 5, 10, 20, 30];
 
 for ii = 1:length(fr)
@@ -80,12 +80,12 @@ for ii = 1:length(fr)
             j = mod(i+6,13) +1;
         end
         %i and j are the indices of thmatlab e months that need to be combined
-        corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);%raw_monthly_maps(i,91:end,:);%smooth_map(i,91:end,:);
-        corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); % raw_monthly_maps(j,1:90,:); %smooth_map(j,1:90,:); % 
+        corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);
+        corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); 
     end
 
     %get smooth version
-    [Rcorrected_monthly_smooth] = Clean_up_biomesV3( corrected_monthly_raw,new_weights,...
+    [Rcorrected_monthly_smooth] = Clean_up_biomes( corrected_monthly_raw,new_weights,...
     area_map,0.5,4,0);
     save(horzcat('Removed_corrected_month_fr_',int2str(fr(ii))),'Rcorrected_monthly_smooth')
 end
@@ -96,10 +96,10 @@ end
 % Here we use the area-weighted Kappa index to assess the robustness of our
 % biomes to spatio-temporal information loss and feature loss
 % =========================================================================
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/05Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes/')
 load('Seasonally_corrected_monthly_biomes.mat')
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/FeatureLoss/Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/FeatureLoss/Biomes/')
 load('Removed_corrected_month_fr_1.mat')
 R1 = Rcorrected_monthly_smooth;
 load('Removed_corrected_month_fr_5.mat')
@@ -111,7 +111,7 @@ R20 = Rcorrected_monthly_smooth;
 load('Removed_corrected_month_fr_30.mat')
 R30 = Rcorrected_monthly_smooth;
 
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/06Robustness/SpatialTemporalLoss/Biomes/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/06Robustness/SpatialTemporalLoss/Biomes/')
 load('Leaky_corrected_month_fr_1.mat')
 L1 = Lcorrected_monthly_smooth;
 load('Leaky_corrected_month_fr_5.mat')
@@ -122,8 +122,7 @@ load('Leaky_corrected_month_fr_20.mat')
 L20 = Lcorrected_monthly_smooth;
 load('Leaky_corrected_month_fr_30.mat')
 L30 = Lcorrected_monthly_smooth;
-%%
-%kappa analysis for spatio-temporal information loss
+%% kappa analysis for spatio-temporal information loss
 for i = 1:5
     kappas = NaN(1,12);
     switch i
@@ -140,7 +139,7 @@ for i = 1:5
     end
 
 
-    [correspondence, maps] = get_correspondence_partitioningsV2( corrected_monthly_smooth,data,area_map);
+    [correspondence, maps] = get_correspondence_partitionings( corrected_monthly_smooth,data,area_map);
 
     changed_data = data.*NaN;
     for m = 1:size(correspondence,1)
@@ -176,7 +175,7 @@ for i = 1:5
     end
 
 
-    [correspondence, maps] = get_correspondence_partitioningsV2( corrected_monthly_smooth,data,area_map);
+    [correspondence, maps] = get_correspondence_partitionings( corrected_monthly_smooth,data,area_map);
 
     changed_data = data.*NaN;
     for m = 1:size(correspondence,1)

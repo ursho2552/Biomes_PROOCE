@@ -11,14 +11,14 @@
 %==========================================================================
 
 %load all variables needed
-cd('/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/')
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/')
 load('00Probabilities/Simple_sort_Data.mat')
 load('HelpVariables.mat')
 
 %define directory to store validation experiments
-folder_results = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/03CrossValidation/Validation/';
+folder_results = '/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/03CrossValidation/Validation/';
 %define directory where trained SOMs are stored
-folder_SOM_data = '/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/03CrossValidation/SOMs/';
+folder_SOM_data = '/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/03CrossValidation/SOMs/';
 
 %define the "names" of leave-out data
 fraqs = [10,20,30,50];
@@ -72,19 +72,9 @@ for j = 1:length(fraqs)
         % Get original distribution of neurons
         % =====================================================================
 
-        %For full/cv version: Start
-%         coords = unique(No_nan_phyto_simple(:,2:3),'rows');
-%         col1 = No_nan_phyto_simple(:,2).*0;
-% 
-%         for ii = 1:length(ind)
-%             col1(No_nan_phyto_simple(:,2) == coords(ind(ii),1) & No_nan_phyto_simple(:,3) == coords(ind(ii),2)) = 1;
-%         end       
-%             ind = No_nan_phyto_simple(col1==1,1);
-%             ind_tr = No_nan_phyto_simple(col1==0,1);
 
         ind = No_nan_phyto_simple(training_flag == 0,1); 
         ind_tr = No_nan_phyto_simple(training_flag == 1,1);
-        %For full/cv version: END
 
         tmp_simple = No_nan_phyto_simple(:,2:4);
         tmp_simple(ind,:) = [];
@@ -92,6 +82,8 @@ for j = 1:length(fraqs)
         [neuron_maps] = prepare2plot( [tmp_simple,classes_noise(:,1)]);
 
         [ validation_classes ] = Apply_SOM( No_nan_phyto_simple(ind,:), noise_net );
+        
+%             %Alternative        
 %             Analog_data = No_nan_phyto_simple(ind,:);
 %             validation_classes = Analog_data(:,1).*NaN;
 % 
@@ -101,10 +93,12 @@ for j = 1:length(fraqs)
 %                 validation_classes(iii) = r;
 %                
 %             end
+
+
         %choose number of cluster
 
         disp('Clustering...')
-        ts
+
         for k = 1:99%from 2 to 100 (as defined by function DaviesBouldinDendrogram)
             %number of clusters
             n_clusters = k+1;
@@ -150,12 +144,9 @@ for j = 1:length(fraqs)
             new_validation_classes(isnan(new_validation_classes(:,3)),3) = size(new_weights,1);
 
             obs_avg = No_nan_phyto_simple(ind,5:end-1) - new_weights(new_validation_classes(:,3),:);
-            difference(ts,k) = mean(mean(abs(obs_avg),1,'omitnan'),'omitnan'); %fendereski
-            %aa(1,k) = mean(mean(abs(obs_avg),1,'omitnan'),'omitnan');
-            difference_alt(ts,k) = sum(sum(abs(obs_avg),2,'omitnan'),'omitnan');%as quantization error
-            %aa(2,k) =mean(sum(abs(obs_avg),2,'omitnan'),'omitnan');
-            FOM(ts,k) = sqrt(mean(sum(obs_avg.^2,2,'omitnan'),'omitnan'));%figure of merit
-            %aa(3,k) =sqrt(mean(sum(obs_avg.^2,2,'omitnan'),'omitnan'));
+            difference(1,ts,k) = mean(mean(abs(obs_avg),1,'omitnan'),'omitnan'); %fendereski
+            difference_alt(1,ts,k) = sum(sum(abs(obs_avg),2,'omitnan'),'omitnan');%as quantization error
+            FOM(1,ts,k) = sqrt(mean(sum(obs_avg.^2,2,'omitnan'),'omitnan'));%figure of merit
             %NOTE: magnitude of quantization error form and fendereski is
             %different, but slope change is equal. For FOM, the slope change is
             %less large, but similar --> problem of large dimensions aggarwal
@@ -169,6 +160,9 @@ for j = 1:length(fraqs)
     end
 
 end
+
+    
+
 %% Figure 1
 % We use the Oliver approach: optimal number of classes is 
 % the point where adding one more class decreases the error by less than 1%
@@ -176,8 +170,7 @@ end
 
 Num_boundaries = [1,10;1,5;1,3;1,2];
 
- figure()
- hold on;
+
  styles_line = ['s-','-o','+-','d-'];
  cv_tr = [10,8,9,9];
 for test = 1:4
@@ -194,7 +187,8 @@ for test = 1:4
     end
     
     difference(difference==0) = NaN;
-    mean_difference = mean(tmp,1,'omitnan');
+    
+    mean_difference = mean(squeeze(difference),1,'omitnan');
 
     dydx = mean_difference.*NaN;
     for i = 2:length(mean_difference)-1
