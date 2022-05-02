@@ -61,8 +61,12 @@ else
 end
 
 
+%% Figure A.2
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/04CentroidDefinition')
+load('Centroid_metrics.mat')
+n_clusters = [2:20];
 
-cd(folder_main)
+
 figure
 hold on
 plot(n_clusters,difference_freq)
@@ -73,6 +77,7 @@ ylabel('Mean difference between observation and centroid')
 
 legend('Frequency weighted','Unique weighted')
 
+cd(folder_main)
 
 
 

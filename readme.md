@@ -7,6 +7,6 @@ The manuscript detailing the resulting biomes has been published in [Progress in
 
 *Hofmann Elizondo U., Righetti D., Benedetti F., and Vogt M. (2021) Biome partitioning of the global ocean based on phytoplankton biogeography. Progress in Oceanography, Volume 194, ISSN 0079-6611, https://doi.org/10.1016/j.pocean.2021.102530* 
 
-
+![](https://github.com/ursho2552/Biomes_PROOCE/blob/master/Data/05Biomes/biome_distribution.gif)
 
 

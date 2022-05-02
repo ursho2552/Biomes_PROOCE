@@ -169,7 +169,7 @@ end
 % for three consecutive clusterings
 
 Num_boundaries = [1,10;1,5;1,3;1,2];
-
+cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/03CrossValidation/Validation')
 
  styles_line = ['s-','-o','+-','d-'];
  cv_tr = [10,8,9,9];
