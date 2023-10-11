@@ -10,7 +10,7 @@ Parameters:
     directory_out (str): Path to folder to store trained SOM and error
     file_out (str): Name of the output file
     iter (int): Iterator in the for loop calling this function
- 
+
  Output
      None. This function saves the trained SOM and errors to the specified
      file
@@ -22,8 +22,6 @@ Parameters:
 % =========================================================================
 
 load(directory_data)
-
-
 
 test_dim = [neurons neurons];
 test_epoch = epochs;
@@ -38,13 +36,12 @@ save(horzcat(file_out,'_',num2str(iter)),'classes','net','iter')
 computing_time(i) = toc
 
 tic
-[ qe, te, total_error ] = get_total_error( No_nan_phyto_simple,classes, net,'mandist' ); 
+[ qe, te, total_error ] = get_total_error( No_nan_phyto_simple,classes, net,'mandist' );
 %store qe and te to later compare their fraction to the total error
 toc
 
 %save the error
 save(horzcat(file_out,'_error_',num2str(iter)),'total_error','qe','te','iter','computing_time')
- 
 
 exit
 end
