@@ -30,18 +30,20 @@ tic
 [classes, net] = My_SOM( No_nan_phyto_simple, test_dim(1),...
     test_dim(2),test_epoch,'mandist' );
 
-cd(directory_out)
+cd(char(directory_out))
 %save each SOM run
-save(horzcat(file_out,'_',num2str(iter)),'classes','net','iter')
-computing_time(i) = toc
+save(horzcat(char(file_out),'_',num2str(iter)),'classes','net','iter')
+computing_time = toc
 
 tic
-[ qe, te, total_error ] = get_total_error( No_nan_phyto_simple,classes, net,'mandist' );
+[ qe, te, total_error ] = get_total_error( No_nan_phyto_simple, classes,...
+    net,'mandist' );
 %store qe and te to later compare their fraction to the total error
 toc
 
 %save the error
-save(horzcat(file_out,'_error_',num2str(iter)),'total_error','qe','te','iter','computing_time')
+save(horzcat(char(file_out),'_error_',num2str(iter)),'total_error','qe','te','iter','computing_time')
 
 exit
+
 end

@@ -1,4 +1,4 @@
-#!/bin/sh
+#/bin/sh
 
 # =====================================================================
 #                             INSTRUCTIONS
@@ -21,12 +21,12 @@ optimal_neurons=31
 optimal_epochs=200
 
 #declare string arguments
-directory_data=\"/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Simple_sort_Data.mat\"
-directory_out_neuron=\"/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error/\"
-directory_out_epoch=\"/net/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/02Epoch_error/\"
+directory_data=\"/nfs/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/00Probabilities/Simple_sort_Data.mat\"
+directory_out_neuron=\"/nfs/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/01Neurons_error/\"
+directory_out_epoch=\"/nfs/kryo/work/ursho/Damiano_Presence_data/presence_absence_tables_ensemble_averages/Group_specific_background_approach/Data/02Epoch_error/\"
 file_out=\"Single_run\"
 
-COUNTER=0
+COUNTER=1
 if [ $1 == neurons ]
 then
       #loop for testing optimal number of neurons
@@ -34,6 +34,7 @@ then
       do
             sbatch -n 1 --time=24:00:00 --mem-per-cpu=37000 --wrap "matlab -nodisplay -nojvm -r 'Run_SOM($value,$optimal_epochs,$directory_data,$directory_out_neuron,$file_out,$COUNTER)'"
             COUNTER=$[COUNTER + 1]
+		break
       done
 
 elif [ $1 == epochs ]
