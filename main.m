@@ -126,6 +126,7 @@ end
 
 No_nan_phyto = [All_phyto(:,[1 3 4]),All_phyto(:,2),...
     All_phyto(:,5:end), (1:length(All_phyto))'*NaN];
+No_nan_phyto(:,1) = 1:size(No_nan_phyto,1);
 
 % =========================================================================
 % Save your complete, merged data (commented out to avoid overwritting)
