@@ -126,7 +126,6 @@ end
 
 No_nan_phyto = [All_phyto(:,[1 3 4]),All_phyto(:,2),...
     All_phyto(:,5:end), (1:length(All_phyto))'*NaN];
-No_nan_phyto(:,1) = 1:size(No_nan_phyto,1);
 
 % =========================================================================
 % Save your complete, merged data (commented out to avoid overwritting)
@@ -229,6 +228,7 @@ for i = 1:length(LatLon)
         No_nan_phyto_simple(r(j),2:3) = LatLon(i,4:5);
     end
 end
+No_nan_phyto_simple(:,1) = 1:size(No_nan_phyto_simple,1);
 %save the dataset
 cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities')
 if isfile('Simple_sort_Data.mat')
