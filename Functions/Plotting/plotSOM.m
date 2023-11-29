@@ -19,6 +19,8 @@ Parameters:
 
 lons = -179.5:179.5;
 lats = -89.5:89.5;
+latlim = [-78 80];
+lonlim = [20.5 379.5];
 
 h = figure('color','white');
 hold on
