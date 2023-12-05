@@ -269,7 +269,7 @@ end
 % =========================================================================
 
 n_clusters = 8;
-abs_latchl = abs(latchl);
+abs_lats = abs(lats);
 median_lat = NaN(12,n_clusters);
 for m = 1:12
     for i = 1:n_clusters
@@ -280,7 +280,7 @@ for m = 1:12
             r_all = c_un.*NaN;
             tmp = NaN;
             for j = 1:length(c_un)
-                r_all(j) = median(abs_latchl(r(c == c_un(j))),'omitnan');
+                r_all(j) = median(abs_lats(r(c == c_un(j))),'omitnan');
             end
              median_lat(m,i) = median(r_all,'omitnan');   
             
