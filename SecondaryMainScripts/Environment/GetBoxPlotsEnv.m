@@ -90,7 +90,11 @@ p.BackgroundColor = [1 1 1];
 boxtitle2 = { 'N', 'P', 'Si', 'P*',...
     'SSS','SST', 'MLD', 'log(NPP)', 'PAR', 'log(chl)', 'pCO_{2}', 'Wind'}
 median_env = ones(12,n_clusters).*NaN;
-sequence = [2 5 4 3 8 1 6 7]
+
+%The sequence was calculated in Analysis.m but it should be as follows:
+%sequence = [2 5 4 3 8 1 6 7]
+%This also applies to the xlabels which are hardcoded below
+
 IQR = median_env;
 for i = 1:size(map_env,1)
     re_anova_annual = ones(12*180*360,n_clusters).*NaN;
