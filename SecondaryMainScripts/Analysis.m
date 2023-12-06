@@ -296,6 +296,11 @@ xticklabels({'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
     '(7) PEU','(8) SMN'})   
 grid on
 
+% get sequence of biomes
+disp('The sequence in decreasing median latitude is:')
+[sorted, sequence] = sort(median(median_lat,1,'omitnan'));
+sequence = flip(sequence)
+
 
 %% Figure 4a Plot dendrogram of clusters/biomes
 
