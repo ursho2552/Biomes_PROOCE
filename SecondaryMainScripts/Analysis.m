@@ -892,15 +892,6 @@ tmp_satellite_species(tmp_satellite_species > 0) = 1;
 
 cd(folder_main)
 
-%% get all core species
-
-[r, c] = find(core_species == 1);
-
-all_core_species = unique(c)
-labs_core = name_genus_phylum(all_core_species,:);
-mat_cov = round(100.*coverage(:,all_core_species)')./100;
-Values_per_species(all_core_species,:)
-
 %% Get indicator species from monthly data
 
 for m = 1:12
