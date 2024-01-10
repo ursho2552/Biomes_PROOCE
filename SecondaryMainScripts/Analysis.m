@@ -1032,7 +1032,6 @@ ind_species = c;
 %get the names
 labs_core = name_genus_phylum(ind_species,:)
 mat_cov =coverage(:,ind_species)';
-Values_per_species(ind_species,:)
 
 % =========================================================================
 % ============== THERE ARE NO INDICATOR SPECIES! ==========================
@@ -1511,8 +1510,6 @@ for m = 1:12
     plotSOM(smooth_map_network,m,9)
 end
 
-
-
 %% Environmental analysis
 
 % Use the respective scripts (Niches_from_model, Get_environmental_data,
@@ -1521,88 +1518,3 @@ end
 %% Get niches from model
 %plot distribution of the cooccurrences for each biome
 Niches_from_model
-
-%% Additional analysis on carbon and  biovolume (Not used for manuscript)
-
-% Add carbon and biovolume to name_genus_phylum
-% read data from Sal et al (2013) Table 2 manually!!!
-save('Sal_et_al_biovolume','Biovolume_names','Biovolume_values')
-
-
-Values_per_species = NaN(length(name_genus_phylum),2);
-for i = 1:length(name_genus_phylum)
-    [r c] = find(Biovolume_names == name_genus_phylum{i,1})
-    if(~isempty(r))
-        tmp = mean(Biovolume_values(r,:),1,'omitnan');
-        Values_per_species(i,:) = tmp;
-    end
-end
-        
-%get list of number of species per genera 
-
-[r_bac c] = find(name_genus_phylum(:,3) == 'bacillariophyceae')
-bacillario = name_genus_phylum(r_bac,:); 
-bac_gen = unique(bacillario(:,2))
- 
-for i = 1:length(bac_gen)
-    [r c] = find(bacillario(:,2) == bac_gen{i})
-    bac_gen_num(i,1) = length(r)
-end
-
-[r_din c] = find(name_genus_phylum(:,3) == 'dinoflagellata')
-dino = name_genus_phylum(r_din,:); 
-dino_gen = unique(dino(:,2))
- dino_gen_num = NaN(length(dino_gen),1);
-for i = 1:length(dino_gen)
-    [r c] = find(dino(:,2) == dino_gen{i})
-    dino_gen_num(i,1) = length(r)
-end
-
-[r_hap c] = find(name_genus_phylum(:,3) == 'haptophyta')
-hapto = name_genus_phylum(r_hap,:); 
-hapto_gen = unique(hapto(:,2))
-  hapto_gen_num = NaN(length(hapto_gen),1);
-
-for i = 1:length(hapto_gen)
-    [r c] = find(hapto(:,2) == hapto_gen{i})
-    hapto_gen_num(i,1) = length(r)
-end
-
-%get carbon and biovolume for each biome
-carbon_biovolume_all = NaN(12,8,2);
-for m = 1:12
-    for i = 1:n_clusters
-        carbon_biovolume_all(m,i,1) = sum(num_species_monthV3(m,:,i)'.*Values_per_species(:,1),1,'omitnan');
-        carbon_biovolume_all(m,i,2) = sum(num_species_monthV3(m,:,i)'.*Values_per_species(:,2),1,'omitnan');
-    end
-end
-carbon_biovolume_all(carbon_biovolume_all == 0) = NaN;
-
-carbon_biovolume_bac = NaN(12,8,2);
-for m = 1:12
-    for i = 1:n_clusters
-        carbon_biovolume_bac(m,i,1) = sum(num_species_monthV3(m,r_bac,i)'.*Values_per_species(r_bac,1),1,'omitnan');
-        carbon_biovolume_bac(m,i,2) = sum(num_species_monthV3(m,r_bac,i)'.*Values_per_species(r_bac,2),1,'omitnan');
-    end
-end
-carbon_biovolume_bac(carbon_biovolume_bac == 0) = NaN;
-
-carbon_biovolume_din = NaN(12,8,2);
-for m = 1:12
-    for i = 1:n_clusters
-        carbon_biovolume_din(m,i,1) = sum(num_species_monthV3(m,r_din,i)'.*Values_per_species(r_din,1),1,'omitnan');
-        carbon_biovolume_din(m,i,2) = sum(num_species_monthV3(m,r_din,i)'.*Values_per_species(r_din,2),1,'omitnan');
-    end
-end
-carbon_biovolume_din(carbon_biovolume_din == 0) = NaN;
-
-mean(carbon_biovolume_all,1,'omitnan')
-mean(carbon_biovolume_bac,1,'omitnan')
-mean(carbon_biovolume_din,1,'omitnan')
-
-
-
-
-
-
-
