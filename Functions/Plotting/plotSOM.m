@@ -75,6 +75,9 @@ sum(isnan(Fig(:,end)));
 
 t = geoshow(double(lat),double(lon),Fig,'DisplayType','texturemap') 
 set(t,'FaceAlpha','texturemap','AlphaData',double(~isnan(Fig)));
+
+%set(gca,'xlim',[-2.7 2.7],'XTick',(-2.7:.45:2.7)); set(gca,'XtickLabel',(-90:30:270));
+
 % geoshow(double(lat),double(lon),Fig,'DisplayType','contour','LevelList',0.5,'LineColor','red')
 % geoshow(double(lat),double(lon),Fig,'DisplayType','contour','LevelList',1,'LineColor','magenta')
 % land = shaperead('landareas', 'UseGeoCoords', true)

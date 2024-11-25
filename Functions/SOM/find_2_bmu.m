@@ -15,51 +15,75 @@ Parameters:
 
 %}
 
-    %copy occurrence data
-    new_data = data; 
 
-    %find the index in weights that contains the BMU
-    ind = find(classes == class); 
+    classes = classes(:);  % Reshape to column vector
 
-    [m, n] = size(weights);
-    rest_BMU = NaN(m,n+1);
-
-    for i = 1:m
-    %rest_BMU contains all weights and labels of neurons that are not BMU
-    rest_BMU(i,:) = [weights(i,:), classes(i)];   
-
-    end
-
-    %delete BMU, so you only have the non-BMU 
-    rest_BMU(ind,:) = [];      
+    % Remove the current BMU from the list of neurons (leave only potential second BMUs)
+    rest_BMU = [weights, classes];  % Concatenate weights and class labels
+    ind = find(classes == class);   % Find the index of the current BMU
+    rest_BMU(ind, :) = [];       
 
     sum_dist = NaN( length(rest_BMU(:,end)),2 );
     for i =1:length(rest_BMU(:,end))
+        
         if(strcmp(dist_metric,'dist'))
-            dist = new_data - rest_BMU(i,1:end-1);
-            dist2 = dist.^2;
-            dist3 = sum(dist2,2);
-            dist4 = sqrt(dist3);
+            dist = sqrt(sum((data - rest_BMU(i, 1:end-1)).^2));
+            
         elseif(strcmp(dist_metric,'mandist'))
-            dist= abs(new_data - rest_BMU(i,1:end-1));
-            dist3 = sum(dist,2);
-            dist4 = dist3;
+            dist = sum(abs(data - rest_BMU(i, 1:end-1)));
+            
         end
-        sum_dist(i,1) = dist4;
-        sum_dist(i,2) = rest_BMU(i,end);
+        
+        sum_dist(i, :) = [dist, rest_BMU(i, end)];
 
     end
 
-    %need to check if there's only one BMU, if not, choose one at random
-    pre_bmu2 =   sum_dist(find(sum_dist(:,1) == min(sum_dist(:,1))),2);
-    if (size(pre_bmu2) ~= [1 1]) 
-        fprintf('too many \n')
+    % Find the second BMU (smallest distance after excluding the first BMU)
+    min_dist_value = min(sum_dist(:, 1));  % Get minimum distance
+    candidate_bmu2 = sum_dist(sum_dist(:, 1) == min_dist_value, 2);  % Find the second BMU
+
+    % If multiple candidates exist for the second BMU, randomly choose one
+    if numel(candidate_bmu2) > 1
+        bmu2 = datasample(candidate_bmu2, 1);
+    else
+        bmu2 = candidate_bmu2;
     end
-    bmu2 = datasample(pre_bmu2,1);
-
-
-
-   
 
 end
 
+%{
+% Find the index of the BMU (best matching unit)
+
+    classes = classes(:);  % Reshape to column vector
+
+    % Remove the current BMU from the list of neurons (leave only potential second BMUs)
+    rest_BMU = [weights, classes];  % Concatenate weights and class labels
+    ind = find(classes == class);   % Find the index of the current BMU
+    rest_BMU(ind, :) = [];          % Exclude the current BMU
+
+    % Initialize distance array for the second BMU search
+    num_neurons = size(rest_BMU, 1);
+    sum_dist = NaN(num_neurons, 2);
+
+    % Compute distances for each remaining neuron
+    for i = 1:num_neurons
+        if strcmp(dist_metric, 'dist')  % Euclidean distance
+            dist = sqrt(sum((data - rest_BMU(i, 1:end-1)).^2));
+        elseif strcmp(dist_metric, 'mandist')  % Manhattan distance
+            dist = sum(abs(data - rest_BMU(i, 1:end-1)));
+        else
+            error('Unsupported distance metric.');
+        end
+        sum_dist(i, :) = [dist, rest_BMU(i, end)];  % Store distance and neuron label
+    end
+
+    % Find the second BMU (smallest distance after excluding the first BMU)
+    min_dist_value = min(sum_dist(:, 1));  % Get minimum distance
+    candidate_bmu2 = sum_dist(sum_dist(:, 1) == min_dist_value, 2);  % Find the second BMU
+
+    % If multiple candidates exist for the second BMU, randomly choose one
+    if numel(candidate_bmu2) > 1
+        bmu2 = datasample(candidate_bmu2, 1);
+    else
+        bmu2 = candidate_bmu
+%}

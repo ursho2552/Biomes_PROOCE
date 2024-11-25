@@ -228,6 +228,7 @@ for i = 1:length(LatLon)
         No_nan_phyto_simple(r(j),2:3) = LatLon(i,4:5);
     end
 end
+No_nan_phyto_simple(:,1) = 1:size(No_nan_phyto_simple,1);
 %save the dataset
 cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities')
 if isfile('Simple_sort_Data.mat')
@@ -310,6 +311,13 @@ cd(folder_main)
 %% Run the Self-Organizing Map
 
 % =========================================================================
+
+
+%                          =====================
+%                           READ COMMENT BELOW!
+%                          =====================
+
+
 % Run the "SOM" file. This file is a stand-alone file that can be called 
 % independetly from the main file, i.e. sort of a "secondary main file"
 % Running SOM as is will take a very long time. Thus, we instead use the
@@ -435,13 +443,11 @@ CreateCVfolds
 % of the data. For this we use the bash script "Euler_run_CV.sh" which 
 % calls the function CV_SOM with specified parameters to run everything in
 % parallel on a cluster
-% =========================================================================
-% =========================================================================
-% =========================================================================
-% ===== CALLING THE SCRIPT "Euler_run_CV.sh" IS DONE MANUALLY !!!! ========
-% =========================================================================
-% =========================================================================
-% =========================================================================
+
+
+%     ========================================================
+%      CALLING THE SCRIPT "Euler_run_CV.sh" IS DONE MANUALLY
+%     ========================================================
 
 
 % =========================================================================

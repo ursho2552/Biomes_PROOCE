@@ -1,8 +1,10 @@
-function CV_SOM(fr, Num, directory_data, file_partition, directory_output)
+function CV_SOM(neurons, epochs, fr, Num, directory_data, file_partition, directory_output)
 %This traines a SOM for the cross-validation experiment based
 
 %{
 Parameters:
+    neurons (int): Number of neurons
+    epochs (int): Number of epochs
     fr (int): Fraction of data leave-out fraction. Note that the value
     is only a name and not the fraction itself. 
     Num (int): ID of fold combination used
@@ -19,8 +21,8 @@ Parameters:
 %load data
 load(directory_data)
 
-optimal_dim = [31 31];
-optimal_epoch = 200;
+optimal_dim = [neurons neurons];
+optimal_epoch = epochs;
 
 %load partitions
 load(file_partition)

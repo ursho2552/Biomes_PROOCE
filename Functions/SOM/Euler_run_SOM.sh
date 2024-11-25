@@ -34,7 +34,7 @@ then
       do
             sbatch -n 1 --time=24:00:00 --mem-per-cpu=37000 --wrap "matlab -nodisplay -nojvm -r 'Run_SOM($value,$optimal_epochs,$directory_data,$directory_out_neuron,$file_out,$COUNTER)'"
             COUNTER=$[COUNTER + 1]
-		break
+
       done
 
 elif [ $1 == epochs ]

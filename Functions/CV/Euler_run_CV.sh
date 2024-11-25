@@ -14,8 +14,8 @@ module load matlab/R2017b
 # Define variables
 # =============================
 
-optimal_neurons=31
-optimal_epochs=200
+neurons=31
+epochs=200
 
 #declare string arguments
 directory_data=\"/nfs/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/00Probabilities/Simple_sort_Data.mat\"
@@ -44,7 +44,7 @@ for (( i=0; i <= length; i++ ))
             file_partition=\"${directory_cv_partitions}Data_partitioning_cross_validation_fr_${cv}_Seed_7.mat\"
             
             # run Cross Validation
-            sbatch -n 1 --time=24:00:00 --mem-per-cpu=37000 --wrap "matlab -nodisplay -nojvm -r 'CV_SOM($cv, $Num, $directory_data, $file_partition, $directory_output)'"
+            sbatch -n 1 --time=24:00:00 --mem-per-cpu=37000 --wrap "matlab -nodisplay -nojvm -r 'CV_SOM($neurons, $epochs, $cv, $Num, $directory_data, $file_partition, $directory_output)'"
             
        		
     		done
