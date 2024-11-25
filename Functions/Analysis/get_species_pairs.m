@@ -12,7 +12,7 @@ function [biome_pairs] = get_species_pairs(Scores_data,coverage_data)
     % and the ID of the pairs
     % =========================================================================
     PosScores = Scores_data;
-    n_features = size(coverage,2);
+    n_features = size(coverage_data,2);
     mat_pairs = NaN(size(PosScores,1),(n_features*(n_features-1)/2));
     mat_pairs_area = NaN(size(PosScores,1),((n_features*(n_features-1))/2));
     ID_pairs = NaN(2,((n_features*(n_features-1))/2));

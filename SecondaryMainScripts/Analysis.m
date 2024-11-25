@@ -3,8 +3,8 @@
 % =========================================================================
 % After producing biomes on a monthly, seasonal, and annual scale, we now
 % analyse their location and spatio-temporal evolution, their species
-% composition, differences in between and whithin biome-composition, 
-% core, common or indicator speces found in biomes, the species networks, 
+% composition, differences in between and whithin biome-composition,
+% core, common or indicator speces found in biomes, the species networks,
 % and the environmental conditions of each biome
 % =========================================================================
 
@@ -63,8 +63,8 @@ for i =1:12
     end
     %i and j are the indices of thmatlab e months that need to be combined
     corrected_monthly_raw(i,91:end,:) = raw_monthly_maps(i,91:end,:);
-    corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:); 
-    
+    corrected_monthly_raw(i,1:90,:) = raw_monthly_maps(j,1:90,:);
+
     corrected_monthly_ID(i,91:end,:) = ID_maps(i,91:end,:);
     corrected_monthly_ID(i,1:90,:) = ID_maps(j,1:90,:);
 
@@ -209,13 +209,13 @@ for s = 1:5
         else
             tot_area = sum(area_map(~isnan(corr_smooth_annual_map(1,:,:))));
             area_seasonal(i,s) = sum(area_map(corr_smooth_annual_map(1,:,:) == i))/tot_area;
-  
+
         end
     end
 end
 
 disp('Seasonal area coverage by biomes:')
-area_seasonal  = round(1000*area_seasonal)/10    
+area_seasonal  = round(1000*area_seasonal)/10
 
 %% Figure A.15 Plot differences between seasonal biome location and annual location
 
@@ -223,7 +223,7 @@ area_seasonal  = round(1000*area_seasonal)/10
 diff_maps = NaN(4,180,360);
 area_diff = NaN(4,1);
 for s = 1:4
-    
+
     for i = 1:180
         for j = 1:360
             if(corr_smooth_annual_map(1,i,j) == corr_season_smooth(s,i,j))
@@ -233,25 +233,25 @@ for s = 1:4
             end
         end
     end
-    
+
     diff_maps(s,isnan(corr_season_smooth(s,:,:))) = NaN;
     area_diff(s) = sum(area_map(isnan(diff_maps(s,:,:))))/sum(area_map(~isnan(corr_season_smooth(s,:,:))));
-       
+
 end
 
 
 for i = 1:4
-    
+
     plotSOM(diff_maps,i,8)
     cmap = parula(9);
     [cmap_tmp] = shuffle_colormap(cmap);
     [cmap_tmp] = shuffle_colormap(cmap_tmp);
 
     colormap(comb_cmap)
- 
+
     set(findall(gcf,'-property','FontSize'),'FontSize',30)
     set(findall(gcf,'-property','LineWidth'),'LineWidth',3)
-    
+
 end
 
 
@@ -282,8 +282,8 @@ for m = 1:12
             for j = 1:length(c_un)
                 r_all(j) = median(abs_lats(r(c == c_un(j))),'omitnan');
             end
-             median_lat(m,i) = median(r_all,'omitnan');   
-            
+             median_lat(m,i) = median(r_all,'omitnan');
+
         end
     end
 end
@@ -293,11 +293,15 @@ figure
 hold on
 plot(1:8,median(median_lat,1,'omitnan'),'+-')
 xticklabels({'(1) TRP','(2) HIL','(3) WIS','(4) SUS','(5) HIT ', '(6) MTR',...
-    '(7) PEU','(8) SMN'})   
+    '(7) PEU','(8) SMN'})
 grid on
 
+% get sequence of biomes
+disp('The sequence in decreasing median latitude is:')
 [sorted, sequence] = sort(median(median_lat,1,'omitnan'));
 sequence = flip(sequence)
+
+
 %% Figure 4a Plot dendrogram of clusters/biomes
 
 %dendrogram of biome centroids
@@ -383,10 +387,10 @@ for m = 1:12
 end
 
 disp('Median and IQR species richness:')
-nanmedian(num_species,1)   
+nanmedian(num_species,1)
 prctile(num_species,75,1)-prctile(num_species,25,1)
 
-%get sum for each latitude and reproduce Damianos curve (Fig 1 in Global pattern of phytoplankton diversity...) 
+%get sum for each latitude and reproduce Damianos curve (Fig 1 in Global pattern of phytoplankton diversity...)
 sum_lats = NaN(180,1);
 for i = 1:180
     sum_lats(i,1) = nanmean(mean_richness_map(1,i,:),3);
@@ -451,13 +455,13 @@ end
 pp = errorbar(1:8,median(num_species_month,1,'omitnan'),...
     median(num_species_month,1,'omitnan')-prctile(num_species_month,25),...
     prctile(num_species_month,75)-median(num_species_month,1,'omitnan'),'r');
-  xlim([0.5 8.5])  
+  xlim([0.5 8.5])
 xticklabels(yvalues)
-ylabel('Number of species') 
+ylabel('Number of species')
 xlabel('Biome')
 legend([hh(1), pp],{'Monthly projection','Median \pm IQR'})
     iqr(num_species_month,1)
-    
+
 [~, I ] = sort(median(num_species_month,1,'omitnan'),'descend');
 
 %print the names of biomes in descending number of species
@@ -561,7 +565,7 @@ for m = 1:12
 end
 
 disp('Median fraction of species shared between biomes:')
-mean_mat_shared = squeeze(median(matrix_shared_species,1,'omitnan'))        
+mean_mat_shared = squeeze(median(matrix_shared_species,1,'omitnan'))
 
 %% Species richness separated by the top largest groups
 
@@ -645,8 +649,8 @@ for m_idx = 1:length(category)
             total_species(m,i),total_species(m,i)+total_species(m+1,i)],[i i i])
         plot(total_species(m,i),i,'k*')
     end
-    
-    grid on        
+
+    grid on
     ylim([0.5 8.5])
     title(str)
     set (gca,'YDir','reverse')
@@ -758,28 +762,28 @@ plotSOM(my_map,1,NaN)
 %{
 % %mark species in each biome that have at least one month with more than 50%
 % %of area coverage
-% 
+%
 % presence_over_thershold = coverage_month.*0;
 % presence_over_thershold(coverage_month > 0.5) = 1;
 % presence_over_thershold(isnan(coverage_month)) = NaN;
 % presence_over_thershold = squeeze(sum(presence_over_thershold,1,'omitnan'));
-% 
+%
 % %get only species that are present in a biome (with the above threshold)
 % %for the absolute majority of months
 % threshold_presence = squeeze(sum(~isnan(coverage_month),1,'omitnan'));
 % present_species = presence_over_thershold.*0;
 % present_species(presence_over_thershold >= threshold_presence) = 1;
-% 
+%
 % % sum_presence_species = sum(present_species,2)
 % sum_presence_species = sum(present_species,1);
 % sum_presence_species(sum_presence_species > 1) = 1;
 % sum(sum_presence_species)
 % %get the individual species and coverage of species in present_species
-% 
+%
 % for n = 1:length(sum_presence_species)
 %     tmp = coverage(n,present_species(n,:) == 1)
 % end
-%     
+%
 % for n = 1:8
 % [B,tmp] = sort(coverage(n,:),'descend');
 % [~,r]=sort(tmp)
@@ -888,26 +892,24 @@ tmp_satellite_species(tmp_satellite_species > 0) = 1;
 
 cd(folder_main)
 
-
-
 %% Get indicator species from monthly data
 satellite_species(isnan(satellite_species)) = 1;
 for m = 1:12
-    
+
 %     tmp = corr_corrected_monthly_smooth;
 %     tmp(corr_corrected_monthly_smooth==9) = NaN;
 %     num_biomes = length(unique(tmp(m,~isnan(tmp(m,:,:)))));
     num_biomes = length(unique(corr_corrected_monthly_smooth(m,~isnan(corr_corrected_monthly_smooth(m,:,:)))));
-    
-    
+
+
     sum_core = sum(squeeze(core_species(m,:,:)),1,'omitnan');
     sum_core(sum_core > 1) = 0;
     [r, c] = find(sum_core ~= 0);
-    
+
     sum_sat = sum(squeeze(satellite_species(m,:,:)),1,'omitnan');
     [r, c] = find(sum_core ==1 & sum_sat >=num_biomes-1);
     ind_species = c
-    
+
 end
 % =========================================================================
 % There are no indicator species on monthly or on annually averaged biomes
@@ -955,10 +957,10 @@ set(findall(gcf,'-property','LineWidth'),'LineWidth',3)
 
 
 
-%% find indicator species, i.e. core species in only one biome    
+%% find indicator species, i.e. core species in only one biome
 sum_core = squeeze(nansum(core_species(1:8,:),1))
 sum_core(sum_core > 1) = 0;
-[r c] = find(sum_core ~= 0) 
+[r c] = find(sum_core ~= 0)
 % =========================================================================
 % There are 75 core species that are specific for a biome
 % =========================================================================
@@ -974,7 +976,7 @@ num_Satspecies = ones(1,8)
 % Indicator species defined as those that are satellite species in most
 % other biomes
 for i = 1:8
-    
+
 
     [r c] = find(sum_core ~=0 & sum_sat >=i-1)
     num_Satspecies(i) = length(r)
@@ -991,18 +993,18 @@ plot(0:7,num_Satspecies)
 num_biome_ind = (1:8).*NaN;
 for i = 1:8
     sum_sat = squeeze(nansum(satellite_species,1));
-    
+
 
     [r, c] = find(sum_core ~=0 & sum_sat >=i-1);
     ind_species = c;
     %find number of biomes with indicator species under different scenarios
-    
+
     mat_cov =coverage(:,ind_species)';
     [rr, cc] = find(mat_cov >0.9);
-    
+
     num_biome_ind(i) = length(unique(cc));
     [i-1 length(unique(cc))]
-    
+
 end
 
 figure
@@ -1035,7 +1037,6 @@ ind_species = c;
 %get the names
 labs_core = name_genus_phylum(ind_species,:)
 mat_cov =coverage(:,ind_species)';
-Values_per_species(ind_species,:)
 
 % =========================================================================
 % ============== THERE ARE NO INDICATOR SPECIES! ==========================
@@ -1053,7 +1054,7 @@ cd('/net/kryo/work/ursho/PhD/Projects/Biomes/Scripts/Biomes_PROOCE/Data/05Biomes
 load('Seasonally_corrected_original')
 cd(folder_main)
 
-        
+
 tic
 Scores = monthly_Dunning(corr_corrected_monthly_smooth,Season_obs,n_clusters);
 toc
@@ -1098,14 +1099,14 @@ final_pairs = [NaN NaN NaN];
 for i = 1:8
     tmp = sorted_all_biome_pairs(sorted_all_biome_pairs(:,1) == i,:);
     if(~isempty(tmp))
-        connected_edges =  tmp(:,2:3);   
+        connected_edges =  tmp(:,2:3);
         tmp(:,4)
         [connected_edges,num_pairings] = find_most_connected([tmp(:,2), tmp(:,3)],tmp(:,4));
         num_pairings
         final_pairs = [final_pairs; [connected_edges, connected_edges(:,1).*0+i]];
 
     end
-    
+
 end
 
 final_pairs(1,:) = []
@@ -1151,7 +1152,7 @@ for i = 1:length(network_species)
     r1 = find(final_pairs(:,1) == network_species(i,1))
     r2 = find(final_pairs(:,2) == network_species(i,1))
 
-    
+
     for j = 1:length(r1)
         if(isnan(copy_combination(r1(j),1)))
             copy_combination(r1,1) = new_ID;
@@ -1170,7 +1171,7 @@ for i = 1:length(network_species)
      new_ID = new_ID + 1;
      flag = 0
     end
-    
+
 end
 correspondence_labels(1,:) = [];
 copy_combination(:,3) = final_pairs(:,3);
@@ -1218,7 +1219,7 @@ for m = 1:12
     upper_area = prctile(coverage_data,90,2);
     lower_area = prctile(coverage_data,10,2);
     for n = 1:size(PotScores,1)
-        
+
         for i = 1:size(PotScores,3)
 
             for j = i+1:size(PotScores,4)
@@ -1244,7 +1245,7 @@ for m = 1:12
     upper_area = prctile(coverage_data,90,2);
     lower_area = prctile(coverage_data,10,2);
     for n = 1:size(PotScores,1)
-        
+
         for i = 1:size(PotScores,3)
 
             for j = i+1:size(PotScores,4)
@@ -1267,7 +1268,7 @@ mat_pair = NaN(length(final_pairs),8);
 sorted_all_biome_pairs
 months_found = NaN
 for i = 1:size(final_pairs,1)
-    
+
     first = min(final_pairs(i,1:2));
     second = max(final_pairs(i,1:2));
     [r c] = find(sorted_all_biome_pairs(:,1) == final_pairs(i,3) &...
@@ -1277,9 +1278,9 @@ for i = 1:size(final_pairs,1)
     %find tmp in Scores(
     tmp2 = Scores(final_pairs(i,3),:,first,second)
     [r m] = find(tmp2 == tmp)%c is  the month
-    
+
     tmp3 = Scores(:,m,first,second)
-    
+
     months_found= [months_found,m]
     mat_pair(i,:) = tmp3(1:end)';
 end
@@ -1330,12 +1331,12 @@ for i = 1:8
        %scale to 0.1 to 1
        if(length(rp) == 1)
            tmp = 0.99;
-       else    
+       else
            tmp = mapminmax(mat_pair(rp,i)',0.5,0.99);
        end
        for j = 1:length(rp)
            mat_pair_tmp(rp(j),i) = tmp(j);
-       end 
+       end
     end
     [rn, cn] = find(flag_significant(:,i) == 0);
     if(~isempty(rn))
@@ -1347,10 +1348,10 @@ for i = 1:8
        end
        for j = 1:length(rn)
            mat_pair_tmp(rn(j),i) = tmp(j);
-       end 
+       end
     end
 end
-    
+
 final_pairs(:,1)
 final_pairs(:,2)
 
@@ -1367,17 +1368,17 @@ for i = 1:8
         if mat_pair_tmp(j,i) ~= 0
             [r1 c1] = find(all_species_net == final_pairs(j,1));
             [r2 c2] = find(all_species_net == final_pairs(j,2));
-            
+
             matrix_schemaball(r1,r2) = mat_pair_tmp(j,i);
             matrix_schemaball(r2,r1) = mat_pair_tmp(j,i);
         end
-            
+
     end
     %plot
     matrix_schemaball(matrix_schemaball==0) = NaN;
     if i == 2
         schemaball(matrix_schemaball,cellstr(num2str(all_species_net)),[0.5 0.5 0.5; 1 0 0],[0, 0, 0],[1 0 0])
-    else  
+    else
         schemaball(matrix_schemaball,cellstr(num2str(all_species_net)),[0.5 0.5 0.5; 1 0 0],[0, 0, 0],[0 0 0])
     end
 
@@ -1387,9 +1388,9 @@ end
 
 f = figure;
 hold on;
-p = uipanel('Parent',f,'BorderType','none'); 
-%p.Title = 'Normalized Occurrence of PFTs'; 
-p.TitlePosition = 'centertop'; 
+p = uipanel('Parent',f,'BorderType','none');
+%p.Title = 'Normalized Occurrence of PFTs';
+p.TitlePosition = 'centertop';
 p.FontSize = 12;
 p.FontWeight = 'bold';
 p.BackgroundColor = [1 1 1];
@@ -1407,7 +1408,7 @@ for i= Spec_seq%1:size(species_per_PFT,2)
     title(unique_pft(i))
     colorbar
     colormap(jet)
-    h1 = get(gca,'children')    
+    h1 = get(gca,'children')
     copyobj(h1,s)
     hold off;
     j = j+1;
@@ -1426,7 +1427,7 @@ coded_phyto = No_nan_phyto_simple(:,[1:4,unique(network_species(:,1))'+4,end]);
 
 cd(folder_main)
 
-%% Train SOM with network species 
+%% Train SOM with network species
 
 % =========================================================================
 % Run the following snippet on a cluster not your local machine!
@@ -1514,8 +1515,6 @@ for m = 1:12
     plotSOM(smooth_map_network,m,9)
 end
 
-
-
 %% Environmental analysis
 
 % Use the respective scripts (Niches_from_model, Get_environmental_data,
@@ -1524,81 +1523,3 @@ end
 %% Get niches from model
 %plot distribution of the cooccurrences for each biome
 Niches_from_model
-
-%% Additional analysis on carbon and  biovolume (Not used for manuscript)
-
-% Add carbon and biovolume to name_genus_phylum
-% read data from Sal et al (2013) Table 2 manually!!!
-% save('Sal_et_al_biovolume','Biovolume_names','Biovolume_values')
-% 
-% 
-% Values_per_species = NaN(length(name_genus_phylum),2);
-% for i = 1:length(name_genus_phylum)
-%     [r c] = find(Biovolume_names == name_genus_phylum{i,1})
-%     if(~isempty(r))
-%         tmp = mean(Biovolume_values(r,:),1,'omitnan');
-%         Values_per_species(i,:) = tmp;
-%     end
-% end
-%         
-% %get list of number of species per genera 
-% 
-% [r_bac c] = find(name_genus_phylum(:,3) == 'bacillariophyceae')
-% bacillario = name_genus_phylum(r_bac,:); 
-% bac_gen = unique(bacillario(:,2))
-%  
-% for i = 1:length(bac_gen)
-%     [r c] = find(bacillario(:,2) == bac_gen{i})
-%     bac_gen_num(i,1) = length(r)
-% end
-% 
-% [r_din c] = find(name_genus_phylum(:,3) == 'dinoflagellata')
-% dino = name_genus_phylum(r_din,:); 
-% dino_gen = unique(dino(:,2))
-%  dino_gen_num = NaN(length(dino_gen),1);
-% for i = 1:length(dino_gen)
-%     [r c] = find(dino(:,2) == dino_gen{i})
-%     dino_gen_num(i,1) = length(r)
-% end
-% 
-% [r_hap c] = find(name_genus_phylum(:,3) == 'haptophyta')
-% hapto = name_genus_phylum(r_hap,:); 
-% hapto_gen = unique(hapto(:,2))
-%   hapto_gen_num = NaN(length(hapto_gen),1);
-% 
-% for i = 1:length(hapto_gen)
-%     [r c] = find(hapto(:,2) == hapto_gen{i})
-%     hapto_gen_num(i,1) = length(r)
-% end
-% 
-% %get carbon and biovolume for each biome
-% carbon_biovolume_all = NaN(12,8,2);
-% for m = 1:12
-%     for i = 1:n_clusters
-%         carbon_biovolume_all(m,i,1) = sum(num_species_monthV3(m,:,i)'.*Values_per_species(:,1),1,'omitnan');
-%         carbon_biovolume_all(m,i,2) = sum(num_species_monthV3(m,:,i)'.*Values_per_species(:,2),1,'omitnan');
-%     end
-% end
-% carbon_biovolume_all(carbon_biovolume_all == 0) = NaN;
-% 
-% carbon_biovolume_bac = NaN(12,8,2);
-% for m = 1:12
-%     for i = 1:n_clusters
-%         carbon_biovolume_bac(m,i,1) = sum(num_species_monthV3(m,r_bac,i)'.*Values_per_species(r_bac,1),1,'omitnan');
-%         carbon_biovolume_bac(m,i,2) = sum(num_species_monthV3(m,r_bac,i)'.*Values_per_species(r_bac,2),1,'omitnan');
-%     end
-% end
-% carbon_biovolume_bac(carbon_biovolume_bac == 0) = NaN;
-% 
-% carbon_biovolume_din = NaN(12,8,2);
-% for m = 1:12
-%     for i = 1:n_clusters
-%         carbon_biovolume_din(m,i,1) = sum(num_species_monthV3(m,r_din,i)'.*Values_per_species(r_din,1),1,'omitnan');
-%         carbon_biovolume_din(m,i,2) = sum(num_species_monthV3(m,r_din,i)'.*Values_per_species(r_din,2),1,'omitnan');
-%     end
-% end
-% carbon_biovolume_din(carbon_biovolume_din == 0) = NaN;
-% 
-% mean(carbon_biovolume_all,1,'omitnan')
-% mean(carbon_biovolume_bac,1,'omitnan')
-% mean(carbon_biovolume_din,1,'omitnan')
